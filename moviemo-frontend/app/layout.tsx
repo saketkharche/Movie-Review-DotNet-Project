@@ -7,8 +7,8 @@ import Footer from './components/Footer';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'Moviemo - Film İnceleme Platformu',
-  description: 'Filmler hakkında incelemeler yapın ve keşfedin.',
+  title: 'Moviemo - Movie Review Platform',
+  description: 'Review and discover movies.',
 };
 
 export default function RootLayout({

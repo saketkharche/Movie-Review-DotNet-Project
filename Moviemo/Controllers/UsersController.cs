@@ -137,7 +137,7 @@ namespace Moviemo.Controllers
 
             return ResponseDto.Issue switch
             {
-                LoginIssue.NotFound => NotFound("Girilen kullanıcı adına sahip bir hesap bulunamadı."),
+                LoginIssue.NotFound => NotFound("An account with the username entered was not found."),
                 LoginIssue.IncorrectPassword => BadRequest("Parola hatalı."),
                 _ => BadRequest("Kullanıcı girişi gerçekleştirilemedi.")
             };

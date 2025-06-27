@@ -58,7 +58,7 @@ class ApiService {
 
       if (!response.ok) {
         const errorData = await response.text();
-        throw new Error(errorData || 'Giriş başarısız');
+        throw new Error(errorData || 'Login failed');
       }
 
       const data: LoginResponseDto = await response.json();
@@ -84,7 +84,7 @@ class ApiService {
 
       if (!response.ok) {
         const errorData = await response.text();
-        throw new Error(errorData || 'Kayıt başarısız');
+        throw new Error(errorData || 'Registration failed');
       }
 
       const data: CreateResponseDto = await response.json();
@@ -99,7 +99,7 @@ class ApiService {
     try {
       const refreshToken = this.getRefreshToken();
       if (!refreshToken) {
-        throw new Error('Refresh token bulunamadı');
+        throw new Error('Refresh token not found');
       }
 
       const response = await fetch(`${API_BASE_URL}/users/refresh-token`, {
@@ -110,7 +110,7 @@ class ApiService {
 
       if (!response.ok) {
         this.clearLocalStorage();
-        throw new Error('Token yenileme başarısız');
+        throw new Error('Token refresh failed');
       }
 
       const data: TokenResponseDto = await response.json();

@@ -1,10 +1,11 @@
-'use client';
+"use client";
 
+import { useState, useEffect } from "react";
+import { useParams } from "next/navigation";
+import Link from "next/link";
+import { apiService } from "@/app/services/api";
+import Swal from "sweetalert2"; // Added SweetAlert import
 
-import { useState, useEffect } from 'react';
-import { useParams } from 'next/navigation';
-import Link from 'next/link';
-import { apiService } from '@/app/services/api';
 // Placeholder icons (replace with your icon library, e.g., react-icons)
 const UserIcon = () => <span className="h-5 w-5 text-gray-400">👤</span>;
 const EditIcon = () => <span className="h-5 w-5 text-gray-400">✏️</span>;
@@ -19,28 +20,28 @@ export interface User {
 
 // Translation map for field labels and prompts
 const fieldTranslations: Record<keyof User, string> = {
-  id: 'Kimlik',
-  name: 'Ad',
-  surname: 'Soyad',
-  username: 'Kullanıcı Adı',
-  email: 'E-posta',
+  id: "ID",
+  name: "Name",
+  surname: "Surname",
+  username: "Username",
+  email: "Email",
 };
 
 // Map frontend field names to backend DTO property names
 const dtoFieldMap: Record<keyof User, string> = {
-  id: 'Id',
-  name: 'Name',
-  surname: 'Surname',
-  username: 'Username',
-  email: 'Email',
+  id: "Id",
+  name: "Name",
+  surname: "Surname",
+  username: "Username",
+  email: "Email",
 };
 
 export default function ProfilePage() {
   const { id } = useParams();
-  const usersApiUrl = 'https://localhost:7179/api/users';
+  const usersApiUrl = "https://localhost:7179/api/users";
   const [userData, setUserData] = useState<User | null>(null);
-  const [currentUser, setCurrentUser] = useState<User | null>(null); // Store current user data
-  const [error, setError] = useState<string>('');
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [error, setError] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   // Fetch current user data
@@ -50,11 +51,13 @@ export default function ProfilePage() {
         const response = await fetch(`${usersApiUrl}/${id}`, {
           headers: apiService.getHeaders(true),
         });
-        if (!response.ok) throw new Error('Geçerli kullanıcı verileri alınamadı');
+        if (!response.ok) throw new Error("Failed to fetch current user data");
         const data: User = await response.json();
         setCurrentUser(data);
       } catch (err) {
-        setError('Geçerli kullanıcı verileri alınamadı: ' + (err as Error).message);
+        setError(
+          "Failed to fetch current user data: " + (err as Error).message
+        );
       }
     };
     fetchCurrentUser();
@@ -69,11 +72,11 @@ export default function ProfilePage() {
         const response = await fetch(`${usersApiUrl}/${id}`, {
           headers: apiService.getHeaders(true),
         });
-        if (!response.ok) throw new Error('Kullanıcı verileri alınamadı');
+        if (!response.ok) throw new Error("Failed to fetch user data");
         const data: User = await response.json();
         setUserData(data);
       } catch (err) {
-        setError('Kullanıcı verileri alınamadı: ' + (err as Error).message);
+        setError("Failed to fetch user data: " + (err as Error).message);
       } finally {
         setIsLoading(false);
       }
@@ -81,43 +84,68 @@ export default function ProfilePage() {
     fetchUserData();
   }, [id]);
 
-  // Handle field update
+  // Handle field update with SweetAlert
   const handleEdit = async (field: keyof User) => {
     if (!userData) return;
 
-    let newValue: string | number = prompt(
-      `Yeni ${fieldTranslations[field]}:`,
-      getDisplayValue(field, userData[field])
-    ) || '';
-    if (newValue.trim() === '') return; // Cancelled or empty
+    const { value: newValue } = await Swal.fire({
+      title: `Edit ${fieldTranslations[field]}`,
+      input: "text",
+      inputLabel: `New ${fieldTranslations[field]}:`,
+      inputValue: getDisplayValue(field, userData[field]),
+      showCancelButton: true,
+      inputValidator: (value) => {
+        if (!value.trim()) {
+          return "Please enter a valid value";
+        }
+      },
+    });
+
+    if (newValue === undefined || newValue.trim() === "") return; // Cancelled or empty
 
     setIsLoading(true);
     try {
       const response = await fetch(`${usersApiUrl}/${id}`, {
-        method: 'PUT',
+        method: "PUT",
         headers: apiService.getHeaders(true),
-        body: JSON.stringify({ [dtoFieldMap[field]]: newValue }),
+        body: JSON.stringify({ [dtoFieldMap[field]]: newValue.trim() }),
       });
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.message || 'Kullanıcı verileri güncellenemedi');
+        throw new Error(errorData.message || "Failed to update user data");
       }
 
-      setUserData((prev) => (prev ? { ...prev, [field]: newValue } : prev));
+      setUserData((prev) =>
+        prev ? { ...prev, [field]: newValue.trim() } : prev
+      );
+
+      // Show success notification
+      Swal.fire({
+        icon: "success",
+        title: "Update Successful!",
+        text: `${fieldTranslations[field]} has been updated`,
+        timer: 2000,
+        showConfirmButton: false,
+      });
     } catch (err) {
-      setError((err as Error).message);
+      // Show error notification
+      Swal.fire({
+        icon: "error",
+        title: "Update Failed",
+        text: (err as Error).message,
+      });
     } finally {
       setIsLoading(false);
     }
   };
 
   // Define fields to display
-  const fields: (keyof User)[] = ['name', 'surname', 'username', 'email'];
+  const fields: (keyof User)[] = ["name", "surname", "username", "email"];
 
   // Convert userRole enum to string for display
   const getDisplayValue = (field: keyof User, value: any): string => {
-    return String(value || '');
+    return String(value || "");
   };
 
   return (
@@ -126,11 +154,9 @@ export default function ProfilePage() {
         {/* Header */}
         <div className="text-center">
           <h2 className="text-3xl font-extrabold text-white mb-2">
-            Kullanıcı Profili
+            User Profile
           </h2>
-          <p className="text-gray-300">
-            Profil bilgilerini görüntüle ve düzenle
-          </p>
+          <p className="text-gray-300">View and edit profile information</p>
         </div>
 
         {/* Profile Form */}
@@ -167,42 +193,46 @@ export default function ProfilePage() {
                       value={getDisplayValue(field, userData[field])}
                       className="block w-full pl-10 pr-12 py-3 border border-gray-600 rounded-lg bg-gray-800/50 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200"
                     />
-                    {currentUser?.username == localStorage.getItem('username') && <button
-                      type="button"
-                      onClick={() => handleEdit(field)}
-                      className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-white transition-colors"
-                      disabled={isLoading}
-                    >
-                      <EditIcon />
-                    </button>
-                    }
+                    {currentUser?.username ==
+                      localStorage.getItem("username") && (
+                      <button
+                        type="button"
+                        onClick={() => handleEdit(field)}
+                        className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-white transition-colors"
+                        disabled={isLoading}
+                      >
+                        <EditIcon />
+                      </button>
+                    )}
                   </div>
                 </div>
               ))}
             </div>
           ) : (
-            <p className="text-gray-300 text-center">Kullanıcı verisi bulunamadı</p>
+            <p className="text-gray-300 text-center">User data not found</p>
           )}
 
           {/* Password Change Button */}
-          {currentUser?.username == localStorage.getItem('username') && <div className="mt-6">
-            <Link
-              href={`/profile/${id}/change-password`}
-              className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 transform hover:scale-105"
-            >
-              Parola Değiştir
-            </Link>
-          </div>}
+          {currentUser?.username == localStorage.getItem("username") && (
+            <div className="mt-6">
+              <Link
+                href={`/profile/${id}/change-password`}
+                className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 transform hover:scale-105"
+              >
+                Change Password
+              </Link>
+            </div>
+          )}
 
           {/* Footer */}
           <div className="mt-8 text-center">
             <p className="text-gray-300">
-              Geri dön{' '}
+              Go back to{" "}
               <Link
                 href="/"
                 className="text-purple-400 hover:text-purple-300 font-medium transition-colors"
               >
-                Anasayfa
+                Home
               </Link>
             </p>
           </div>
@@ -210,9 +240,7 @@ export default function ProfilePage() {
 
         {/* Additional Info */}
         <div className="text-center">
-          <p className="text-gray-400 text-sm">
-            Film severler için tasarlandı ❤️
-          </p>
+          <p className="text-gray-400 text-sm">Designed for movie lovers ❤️</p>
         </div>
       </div>
     </div>

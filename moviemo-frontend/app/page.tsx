@@ -34,7 +34,7 @@ export default function Home() {
         });
 
         if (!response.ok) {
-          throw new Error('Filmler yüklenirken hata oluştu');
+          throw new Error('An error occurred while loading movies');
         }
 
         const responseData = await response.json();
@@ -43,7 +43,7 @@ export default function Home() {
         setTotalMovieCount(responseData.total);
         setLoading(false);
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Bilinmeyen bir hata oluştu');
+        setError(err instanceof Error ? err.message : 'An unknown error occurred');
         setLoading(false);
       }
     };
@@ -55,7 +55,7 @@ export default function Home() {
     return (
       <div className="container mx-auto px-4 py-12 max-w-5xl">
         <h1 className="text-5xl font-extrabold text-center text-gray-900 mb-8 bg-gradient-to-r from-blue-500 to-purple-600 text-transparent bg-clip-text">
-          Moviemo'ya Hoş Geldiniz
+          Welcome to Moviemo
         </h1>
         <div className="flex justify-center items-center">
           <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-blue-500"></div>
@@ -68,7 +68,7 @@ export default function Home() {
     return (
       <div className="container mx-auto px-4 py-12 max-w-5xl">
         <h1 className="text-5xl font-extrabold text-center text-gray-900 mb-8 bg-gradient-to-r from-blue-500 to-purple-600 text-transparent bg-clip-text">
-          Moviemo'ya Hoş Geldiniz
+          Welcome to Moviemo
         </h1>
         <div className="bg-red-100 text-red-600 p-6 rounded-xl text-center max-w-lg mx-auto">
           <p>{error}</p>
@@ -80,7 +80,7 @@ export default function Home() {
   return (
     <div className="container mx-auto px-4 py-12 max-w-5xl">
       <h1 className="text-5xl font-extrabold text-center text-gray-900 mb-8 bg-gradient-to-r from-blue-500 to-purple-600 text-transparent bg-clip-text">
-        Moviemo'ya Hoş Geldiniz
+        Welcome to Moviemo
       </h1>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {movies.map((movie) => (
