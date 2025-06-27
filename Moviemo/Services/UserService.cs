@@ -28,8 +28,7 @@ namespace Moviemo.Services
 
         public async Task<List<UserGetDto>?> GetAllAsync()
         {
-            _Logger.LogInformation("Tüm kullanıcı bilgileri alınıyor...");
-
+            _Logger.LogInformation("All user information is being retrieved...");
             try
             {
                 return await _Context.Users
@@ -72,15 +71,14 @@ namespace Moviemo.Services
             }
             catch (Exception Ex)
             {
-                _Logger.LogError(Ex, "Tüm kullanıcı bilgileri alınırken bir hata meydana geldi.");
+                _Logger.LogError(Ex, "An error occurred while retrieving all user information.");
                 return null;
             }
         }
 
         public async Task<UserGetDto?> GetByIdAsync(long Id)
         {
-            _Logger.LogInformation("User ID'si {Id} olan kullanıcı bilgisi alınıyor...", Id);
-
+            _Logger.LogInformation("User with ID {Id} is being retrieved...", Id);
             try
             {
                 return await _Context.Users
@@ -121,15 +119,14 @@ namespace Moviemo.Services
             }
             catch (Exception Ex)
             {
-                _Logger.LogError(Ex, "Kullanıcı bilgisi alınırken bir hata meydana geldi.");
+                _Logger.LogError(Ex, "An error occurred while retrieving user information.");
                 return null;
             }
         }
 
         public async Task<UserGetDto?> GetByUsernameAsync(string Username)
         {
-            _Logger.LogInformation("Kullanıcı adı {Username} olan kullanıcı bilgisi alınıyor...", Username);
-
+            _Logger.LogInformation("User with username {Username} is being retrieved...", Username);
             try
             {
                 return await _Context.Users.Where(U => U.Username == Username).Select(U => new UserGetDto
@@ -144,15 +141,14 @@ namespace Moviemo.Services
             }
             catch (Exception Ex)
             {
-                _Logger.LogError(Ex, "Kullanıcı bilgisi alınırken bir hata meydana geldi.");
+                _Logger.LogError(Ex, "An error occurred while retrieving user information.");
                 return null;
             }
         }
 
         public async Task<CreateResponseDto?> CreateAsync(UserCreateDto Dto)
         {
-            _Logger.LogInformation("Yeni kullanıcı oluşturuluyor: {@UserCreateDto}", Dto);
-
+            _Logger.LogInformation("Creating new user: {@UserCreateDto}", Dto);
             try
             {
                 if (await _Context.Users.AnyAsync(U => U.Username == Dto.Username))
@@ -181,15 +177,14 @@ namespace Moviemo.Services
             }
             catch (Exception Ex)
             {
-                _Logger.LogError(Ex, "Kullanıcı oluşturulurken bir hata meydana geldi.");
+                _Logger.LogError(Ex, "An error occurred while creating the user."); 
                 return null;
             }
         }
 
         public async Task<UpdateResponseDto?> UpdateAsync(long Id, long UserId, UserUpdateDto Dto)
         {
-            _Logger.LogInformation("User ID'si {Id} olan kullanıcı güncelleniyor: {@UserUpdateDto}", Id, Dto);
-
+            _Logger.LogInformation("Updating user with ID {Id}: {@UserUpdateDto}", Id, Dto);
             try
             {
                 var User = await _Context.Users.FindAsync(Id);
@@ -228,21 +223,19 @@ namespace Moviemo.Services
                 await _Context.SaveChangesAsync();
 
 
-                _Logger.LogInformation("User ID'si {Id} olan kullanıcı başarıyla güncellendi.", Id);
-
+                _Logger.LogInformation("User with ID {Id} has been successfully updated.", Id);
                 return new UpdateResponseDto { IsUpdated = true };
             } 
             catch (Exception Ex)
             {
-                _Logger.LogError(Ex, "Kullanıcı güncellenirken bir hata meydana geldi.");
+                _Logger.LogError(Ex, "An error occurred while updating the user.");
                 return null;
             }
         }
 
         public async Task<DeleteResponseDto?> DeleteAsync(long Id, long UserId)
         {
-            _Logger.LogInformation("User ID'si {Id} olan kullanıcı siliniyor.", Id);
-
+            _Logger.LogInformation("Deleting user with ID {Id}.", Id);
             try
             {
                 var User = await _Context.Users.FindAsync(Id);
@@ -256,21 +249,19 @@ namespace Moviemo.Services
                 _Context.Users.Remove(User);
                 await _Context.SaveChangesAsync();
 
-                _Logger.LogInformation("User ID'si {Id} olan kullanıcı başarıyla silindi.", Id);
-
+                _Logger.LogInformation("User with ID {Id} has been successfully deleted.", Id);
                 return new DeleteResponseDto { IsDeleted = true };
             }
             catch (Exception Ex)
             {
-                _Logger.LogError(Ex, "Kullanıcı silinirken bir hata meydana geldi.");
+                _Logger.LogError(Ex, "An error occurred while deleting the user.");
                 return null;
             }
         }
 
         public async Task<LoginResponseDto?> LoginAsync(UserLoginDto Dto)
         {
-            _Logger.LogInformation("Kullanıcı {Username} giriş yapıyor...", Dto.Username);
-
+            _Logger.LogInformation("User {Username} is logging in...", Dto.Username);
             try
             {
                 var User = await _Context.Users.FirstOrDefaultAsync(U => U.Username == Dto.Username);
@@ -284,8 +275,7 @@ namespace Moviemo.Services
                     return new LoginResponseDto { Issue = LoginIssue.IncorrectPassword};
                 }
 
-                _Logger.LogInformation("Kullanıcı {Username } başarıyla giriş yaptı.", Dto.Username);
-
+                _Logger.LogInformation("User {Username} successfully logged in.", Dto.Username);
                 return new LoginResponseDto 
                 { 
                     Username = Dto.Username,
@@ -295,7 +285,7 @@ namespace Moviemo.Services
             }
             catch (Exception Ex)
             {
-                _Logger.LogError(Ex, "Kullanıcı giriş yaparken bir hata meydana geldi.");
+                _Logger.LogError(Ex, "An error occurred while the user was logging in.");
                 return null;
             }
         }
@@ -309,8 +299,7 @@ namespace Moviemo.Services
 
         public async Task<PasswordChangeResponseDto?> ChangePasswordAsync(ChangePasswordDto Dto, long Id, long UserId)
         {
-            _Logger.LogInformation("User ID'si {Id} olan kullanıcı parolasını değiştiriyor...", UserId);
-
+            _Logger.LogInformation("User with ID {Id} is changing their password...", UserId);
             try
             {
                 if (Id != UserId)
@@ -335,14 +324,12 @@ namespace Moviemo.Services
 
                 await _Context.SaveChangesAsync();
 
-                _Logger.LogInformation("Kullanıcı parolası başarıyla değiştirildi.");
-
+                _Logger.LogInformation("User password has been successfully changed.");
                 return new PasswordChangeResponseDto { };
             }
             catch (Exception Ex)
             {
-                _Logger.LogError(Ex, "Kullanıcı parolası değiştirilirken bir hata meydana geldi.");
-                return null;
+                _Logger.LogError(Ex, "An error occurred while changing the user password."); return null;
             }
         }
     }

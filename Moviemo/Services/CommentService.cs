@@ -21,7 +21,7 @@ namespace Moviemo.Services
 
         public async Task<List<CommentGetDto>?> GetAllAsync()
         {
-            _Logger.LogInformation("Tüm yorum bilgileri alınıyor...");
+            _Logger.LogInformation("All comment information is obtained ...");
 
             try
             {
@@ -44,14 +44,14 @@ namespace Moviemo.Services
             }
             catch (Exception Ex)
             {
-                _Logger.LogError(Ex, "Tüm yorum bilgileri alınırken bir hata meydana geldi.");
+                _Logger.LogError(Ex, "An error occurred while receiving all comments information.");
                 return null;
             }
         }
 
         public async Task<CommentGetDto?> GetByIdAsync(long Id)
         {
-            _Logger.LogInformation("Comment ID'si {Id} olan yorum alınıyor...", Id);
+            _Logger.LogInformation("The comment with ID {Id} is being retrieved....", Id);
 
             try
             {
@@ -72,14 +72,14 @@ namespace Moviemo.Services
                     .FirstOrDefaultAsync(C => C.Id == Id);
             } catch (Exception Ex) 
             {
-                _Logger.LogError(Ex, "Comment ID'si {Id} olan yorum alınırken bir hata meydana geldi.", Id);
+                _Logger.LogError(Ex, "An error occurred while retrieving the comment with ID {Id}.", Id);
                 return null;
             }
         }
 
         public async Task<List<CommentGetDto>?> GetByMovieIdAsync(long? MovieId)
         {
-            _Logger.LogInformation("Filme ait tüm yorum bilgileri alınıyor...");
+            _Logger.LogInformation("All comments on the film are obtained...");
 
             try
             {
@@ -97,14 +97,14 @@ namespace Moviemo.Services
             }
             catch (Exception Ex)
             {
-                _Logger.LogError(Ex, "Filme ait tüm yorum bilgileri alınırken bir sorun meydana geldi.");
+                _Logger.LogError(Ex, "A problem occurred while getting all the commentary information about the film.");
                 return null;
             }
         }
 
         public async Task<CommentCreateDto?> CreateAsync(CommentCreateDto Dto, long UserId)
         {
-            _Logger.LogInformation("Yeni yorum oluşturuluyor: {@CommentCreateDto}", Dto);
+            _Logger.LogInformation("New Comment is being created: {@CommentCreateDto}", Dto);
 
             try
             {
@@ -118,20 +118,20 @@ namespace Moviemo.Services
                 await _Context.Comments.AddAsync(Comment);
                 await _Context.SaveChangesAsync();
 
-                _Logger.LogInformation("Yorum başarıyla oluşturuldu.");
+                _Logger.LogInformation("The comment was created successfully.");
 
                 return Dto;
             }
             catch (Exception Ex)
             {
-                _Logger.LogError(Ex, "Yorum oluşturulurken bir hata meydana geldi.");
+                _Logger.LogError(Ex, "An error occurred when creating a comment.");
                 return null; 
             }
         }
 
         public async Task<UpdateResponseDto?> UpdateAsync(long Id, long UserId, CommentUpdateDto Dto)
         {
-            _Logger.LogInformation("Comment ID'si {Id} olan yorum güncelleniyor: {@CommentUpdateDto}", Id, Dto);
+            _Logger.LogInformation("Updating comment with ID {Id}: {@CommentUpdateDto}", Id, Dto);
 
             try 
             { 
@@ -163,20 +163,20 @@ namespace Moviemo.Services
 
                 await _Context.SaveChangesAsync();
 
-                _Logger.LogInformation("Comment ID'si {Id} olan yorum başarıyla güncellendi.", Id);
+                _Logger.LogInformation("The comment with ID {Id} has been successfully updated.", Id);
 
                 return new UpdateResponseDto { IsUpdated = true };
             }
             catch (Exception Ex)
             {
-                _Logger.LogError(Ex, "Yorum güncellenirken bir hata meydana geldi.");
+                _Logger.LogError(Ex, "An error occurred while updating the comment.");
                 return null;
             }
         }
 
         public async Task<DeleteResponseDto?> DeleteAsync(long Id, long UserId)
         {
-            _Logger.LogInformation("Comment ID'si {Id} olan yorum siliniyor...", Id);
+            _Logger.LogInformation("Deleting comment with ID {Id}...", Id);
 
             try
             {
@@ -192,13 +192,13 @@ namespace Moviemo.Services
                 await _Context.SaveChangesAsync();
 
 
-                _Logger.LogInformation("Comment ID'si {Id} olan yorum başarıyla silindi.", Id);
+                _Logger.LogInformation("The comment with ID {Id} has been successfully deleted.", Id);
 
                 return new DeleteResponseDto { IsDeleted = true };
             }
             catch (Exception Ex)
             {
-                _Logger.LogError(Ex, "Yorum silinirken bir hata meydana geldi.");
+                _Logger.LogError(Ex, "An error occurred when deleting the comment.");
                 return null;
             }
         }

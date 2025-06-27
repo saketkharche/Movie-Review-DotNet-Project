@@ -35,7 +35,7 @@ namespace Moviemo.Controllers
             var Votes = await _VoteService.GetAllAsync();
 
             if (Votes == null)
-                return StatusCode(500, "Tüm oy bilgileri alınırken bir sunucu hatası meydana geldi.");
+                return StatusCode(500, "A server error occurred when receiving all voting information.");
 
             return Ok(Votes);
         }
@@ -57,20 +57,20 @@ namespace Moviemo.Controllers
         public async Task<IActionResult> CreateVote([FromBody] VoteCreateDto Dto)
         {
             if (!long.TryParse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value, out var UserId))
-                return Unauthorized("Geçersiz kullanıcı token bilgisi.");
+                return Unauthorized("Invalid USER TOKEN INFORMATION.");
 
             var ResponseDto = await _VoteService.CreateAsync(Dto, UserId);
 
             if (ResponseDto == null)
-                return StatusCode(500, "Oy oluşturulurken bir sunucu hatası meydana geldi.");
+                return StatusCode(500, "A server error occurred while creating votes.");
 
             if (ResponseDto.IsCreated == true)
                 return Ok(Dto);
 
             return ResponseDto.Issue switch
             {
-                CreateIssue.SameContent => Conflict("Aynı yoruma birden fazla oy atamazsınız."),
-                _ => BadRequest("Oy oluşturma işlemi gerçekleştirilemedi.")
+                CreateIssue.SameContent => Conflict("You cannot vote for the same comment."),
+                _ => BadRequest("Creating votes could not be carried out.")
             };
         }
 
@@ -80,20 +80,20 @@ namespace Moviemo.Controllers
         public async Task<IActionResult> UpdateVote(long Id, VoteUpdateDto Dto)
         {
             if (!long.TryParse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value, out var UserId))
-                return Unauthorized("Geçersiz kullanıcı token bilgisi.");
+                return Unauthorized("Invalid USER TOKEN INFORMATION.");
 
             var ResponseDto = await _VoteService.UpdateAsync(Id, UserId, Dto);
 
             if (ResponseDto == null)
-                return StatusCode(500, "Oy bilgisi güncellenirken bir sunucu hatası meydana geldi.");
+                return StatusCode(500, "A server error occurred while updating voting information.");
 
             if (ResponseDto.IsUpdated) return Ok(Dto);
 
             return ResponseDto.Issue switch
             {
-                UpdateIssue.NotFound => NotFound($"Vote ID'si {Id} olan oy bulunamadı."),
-                UpdateIssue.NotOwner => Unauthorized("Size ait olmayan bir oyu güncelleyemezsiniz."),
-                _ => BadRequest("Oy güncelleme işlemi gerçekleştirilemedi.")
+                UpdateIssue.NotFound => NotFound($"The vote with ID {Id} was not found.."),
+                UpdateIssue.NotOwner => Unauthorized("You cannot update a vote that does not belong to you."),
+                _ => BadRequest("Voting update could not be performed.")
             };
         }
 
@@ -103,20 +103,20 @@ namespace Moviemo.Controllers
         public async Task<IActionResult> DeleteVote(long Id)
         {
             if (!long.TryParse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value, out var UserId))
-                return Unauthorized("Geçersiz kullanıcı token bilgisi.");
+                return Unauthorized("Invalid USER TOKEN INFORMATION.");
 
             var ResponseDto = await _VoteService.DeleteAsync(Id, UserId);
 
             if (ResponseDto == null)
-                return StatusCode(500, "Oy silinirken bir sunucu hatası meydana geldi.");
+                return StatusCode(500, "A server error occurred while deleting the vote.");
 
             if (ResponseDto.IsDeleted) return NoContent();
 
             return ResponseDto.Issue switch
             {
-                DeleteIssue.NotFound => NotFound($"Vote ID'si {Id} olan oy bulunamadı."),
-                DeleteIssue.NotOwner => Unauthorized("Size ait olmayan bir oyu silemezsiniz."),
-                _ => BadRequest("Oy silme işlemi gerçekleştirilemedi.")
+                DeleteIssue.NotFound => NotFound($"The vote with ID {Id} was not found."),
+                DeleteIssue.NotOwner => Unauthorized("You cannot delete a vote that does not belong to you."),
+                _ => BadRequest("Voting could not be performed.")
             };
         }
     }

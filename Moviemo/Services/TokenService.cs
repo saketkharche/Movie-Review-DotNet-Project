@@ -15,7 +15,7 @@ namespace Moviemo.Services
     {
         public async Task<TokenResponseDto> CreateTokenResponseAsync(User User)
         {
-            Logger.LogInformation("Token response oluşturuluyor...");
+            Logger.LogInformation("Creating token response...");
 
             try
             {
@@ -29,14 +29,14 @@ namespace Moviemo.Services
             }
             catch (Exception Ex)
             {
-                Logger.LogError(Ex, "Token response oluşturulurken bir hata meydana geldi.");
-                return new TokenResponseDto {};
+                Logger.LogError(Ex, "An error occurred while creating the token response.");
+                return new TokenResponseDto { };
             }
         }
 
         public async Task<TokenResponseDto?> RefreshTokensAsync(long UserId, string RefreshToken)
         {
-            Logger.LogInformation("Tokenler yenileniyor...");
+            Logger.LogInformation("Refreshing tokens...");
 
             try
             {
@@ -44,20 +44,20 @@ namespace Moviemo.Services
 
                 if (User is null) return null;
 
-                Logger.LogInformation("Tokenler başarıyla yenilendi.");
+                Logger.LogInformation("Tokens successfully refreshed.");
 
                 return await CreateTokenResponseAsync(User);
             }
             catch (Exception Ex)
             {
-                Logger.LogError(Ex, "Tokenler yenilenirken bir hata meydana geldi.");
+                Logger.LogError(Ex, "An error occurred while refreshing tokens.");
                 return null;
             }
         }
 
         public async Task<User?> ValidateRefreshTokenAsync(long UserId, string RefreshToken)
         {
-            Logger.LogInformation("Refresh token doğrulanıyor...");
+            Logger.LogInformation("Validating refresh token...");
 
             try
             {
@@ -68,20 +68,20 @@ namespace Moviemo.Services
                     User.RefreshTokenExpiryTime <= DateTime.UtcNow)
                     return null;
 
-                Logger.LogInformation("Refresh token başarıyla doğrulandı.");
+                Logger.LogInformation("Refresh token successfully validated.");
 
                 return User;
             }
             catch (Exception Ex)
             {
-                Logger.LogError(Ex, "Refresh token doğrulanırken bir hata meydana geldi.");
+                Logger.LogError(Ex, "An error occurred while validating the refresh token.");
                 return null;
             }
         }
 
         public string GenerateRefreshToken()
         {
-            Logger.LogInformation("Yeni refresh token oluşturuluyor...");
+            Logger.LogInformation("Generating new refresh token...");
 
             try
             {
@@ -92,8 +92,8 @@ namespace Moviemo.Services
             }
             catch (Exception Ex)
             {
-                Logger.LogError(Ex, "Refresh token oluşturulurken bir hata meydana geldi.");
-                throw new ApplicationException("Refresh token oluşturulamadı, lütfen daha sonra tekrar deneyin.");
+                Logger.LogError(Ex, "An error occurred while generating the refresh token.");
+                throw new ApplicationException("Failed to generate refresh token. Please try again later.");
             }
         }
 
@@ -108,7 +108,7 @@ namespace Moviemo.Services
 
         public string CreateToken(User User)
         {
-            Logger.LogInformation("Yeni JWT token oluşturuluyor...");
+            Logger.LogInformation("Creating new JWT token...");
 
             try
             {
@@ -136,9 +136,9 @@ namespace Moviemo.Services
             }
             catch (Exception Ex)
             {
-                Logger.LogError(Ex, "JWT token oluşturulurken bir hata meydana geldi.");
-                throw new ApplicationException("JWT token oluşturulamadı, lütfen daha sonra tekrar deneyin.");
-            }   
+                Logger.LogError(Ex, "An error occurred while creating the JWT token.");
+                throw new ApplicationException("JWT token could not be created. Please try again later.");
+            }
         }
     }
 }

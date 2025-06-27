@@ -20,7 +20,7 @@ namespace Moviemo.Services
         }
         public async Task<List<ReviewGetDto>?> GetAllAsync()
         {
-            _Logger.LogInformation("Tüm inceleme bilgileri alınıyor...");
+            _Logger.LogInformation("All review information is obtained...");
 
             try
             {
@@ -41,15 +41,14 @@ namespace Moviemo.Services
             }
             catch (Exception Ex)
             {
-                _Logger.LogError(Ex, "Tüm inceleme bilgileri alınırken bir hata meydana geldi."); ;
+                _Logger.LogError(Ex, "An error occurred when receiving all review information."); ;
                 return null;
             }
         }
 
         public async Task<ReviewGetDto?> GetByIdAsync(long Id)
         {
-            _Logger.LogInformation("Review ID'si {Id} olan inceleme bilgisi alınıyor.", Id);
-
+            _Logger.LogInformation("The review information with ID {Id} is being retrieved.", Id);
             try
             {
                 return await _Context.Reviews
@@ -68,15 +67,13 @@ namespace Moviemo.Services
             }
             catch (Exception Ex)
             {
-                _Logger.LogError(Ex, "İnceleme bilgisi alınırken bir hata meydana geldi.");
-                return null;
+                _Logger.LogError(Ex, "An error occurred while retrieving the review information."); return null;
             }
         }
 
         public async Task<List<ReviewGetDto>?> GetByMovieIdAsync(long? MovieId)
         {
-            _Logger.LogInformation("Filme ait tüm incelemeler alınıyor...");
-
+            _Logger.LogInformation("All reviews belonging to the movie are being retrieved...");
             try
             {
                 return await _Context.Reviews.Where(R => R.MovieId == MovieId).Select(R => new ReviewGetDto
@@ -92,15 +89,13 @@ namespace Moviemo.Services
             }
             catch (Exception Ex)
             {
-                _Logger.LogError(Ex, "Filme ait incelemeler alınırken bir sorun meydana geldi.");
-                return null;
+                _Logger.LogError(Ex, "A problem occurred while retrieving the reviews belonging to the movie."); return null;
             }
         }
 
         public async Task<ReviewCreateDto?> CreateAsync(ReviewCreateDto Dto, long UserId)
         {
-            _Logger.LogInformation("Yeni inceleme oluşturuluyor: {@ReviewCreateDto}", Dto);
-
+            _Logger.LogInformation("A new review is being created: {@ReviewCreateDto}", Dto);
             try
             {
                 var Review = new Review
@@ -114,13 +109,12 @@ namespace Moviemo.Services
                 await _Context.Reviews.AddAsync(Review);
                 await _Context.SaveChangesAsync();
 
-                _Logger.LogInformation("İnceleme başarıyla oluşturuldu.");
-
+                _Logger.LogInformation("The review has been successfully created.");
                 return Dto;
             }
             catch (Exception Ex)
             {
-                _Logger.LogError(Ex, "İnceleme oluşturulurken bir hata meydana geldi.");
+                _Logger.LogError(Ex, "An error occurred while creating the review.");
                 return null;
             }
 
@@ -129,8 +123,7 @@ namespace Moviemo.Services
 
         public async Task<UpdateResponseDto?> UpdateAsync(long Id, long UserId, ReviewUpdateDto Dto)
         {
-            _Logger.LogInformation("Review ID'si {Id} olan inceleme güncelleniyor: {@ReviewUpdateDto}", Id, Dto);
-
+            _Logger.LogInformation("Updating review with ID {Id}: {@ReviewUpdateDto}", Id, Dto);
             try
             {
                 var Review = await _Context.Reviews.FindAsync(Id);
@@ -159,21 +152,20 @@ namespace Moviemo.Services
 
                 await _Context.SaveChangesAsync();
 
-                _Logger.LogInformation("Review ID'si {Id} olan inceleme başarıyla güncellendi.", Id);
+                _Logger.LogInformation("The review with ID {Id} has been successfully updated.", Id);
 
                 return new UpdateResponseDto { IsUpdated = true };
             }
             catch (Exception Ex)
             {
-                _Logger.LogError(Ex, "İnceleme güncellenirken bir hata meydana geldi.");
+                _Logger.LogError(Ex, "An error occurred while updating the review.");
                 return null;
             }
         }
 
         public async Task<DeleteResponseDto?> DeleteAsync(long Id, long UserId)
         {
-            _Logger.LogInformation("Review ID'si {Id} olan inceleme siliniyor...", Id);
-
+            _Logger.LogInformation("Deleting review with ID {Id}...", Id);
             try
             {
                 var Review = await _Context.Reviews.FindAsync(Id);
@@ -187,14 +179,12 @@ namespace Moviemo.Services
                 _Context.Reviews.Remove(Review);
                 await _Context.SaveChangesAsync();
 
-                _Logger.LogInformation("Review ID'si {Id} olan inceleme başarıyla silindi.", Id);
-
+                _Logger.LogInformation("The review with ID {Id} has been successfully deleted.", Id);
                 return new DeleteResponseDto { IsDeleted = true };
             }
             catch (Exception Ex)
             {
-                _Logger.LogError(Ex, "İnceleme silinirken bir hata meydana geldi");
-                return null;
+                _Logger.LogError(Ex, "An error occurred while deleting the review"); return null;
             }
         }
     }

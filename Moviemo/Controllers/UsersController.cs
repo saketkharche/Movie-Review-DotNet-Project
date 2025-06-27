@@ -31,7 +31,7 @@ namespace Moviemo.Controllers
 
                 if (User == null)
                 {
-                    return StatusCode(500, "Kullanıcı bilgisi alınırken bir sunucu hatası meydana geldi.");
+                    return StatusCode(500, "A server error occurred during user information.");
                 }
 
                 return Ok(User);
@@ -40,7 +40,7 @@ namespace Moviemo.Controllers
             var Users = await _UserService.GetAllAsync();
 
             if (Users == null)
-                return StatusCode(500, "Tüm kullanıcı bilgileri alınırken bir sunucu hatası meydana geldi.");
+                return StatusCode(500, "A server error occurred when receiving all user information.");
 
             return Ok(Users);
         }
@@ -63,15 +63,15 @@ namespace Moviemo.Controllers
             var ResponseDto = await _UserService.CreateAsync(Dto);
 
             if (ResponseDto == null) 
-                return StatusCode(500, "Kullanıcı oluşturulurken bir sunucu hatası meydana geldi.");
+                return StatusCode(500, "A server error occurred when creating a user.");
 
             if (ResponseDto.IsCreated)
                 return Ok(ResponseDto);
 
             return ResponseDto.Issue switch
             {
-                CreateIssue.SameContent => BadRequest("Kullanıcı adı kullanımda."),
-                _ => BadRequest("Kullanıcı oluşturma işlemi gerçekleştirilemedi.")
+                CreateIssue.SameContent => BadRequest("Username in use."),
+                _ => BadRequest("The user could not be performed.")
             };
         }
 
@@ -81,22 +81,22 @@ namespace Moviemo.Controllers
         public async Task<IActionResult> UpdateUser(long Id, [FromBody] UserUpdateDto Dto)
         {
             if (!long.TryParse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value, out var UserId))
-                return Unauthorized("Geçersiz kullanıcı token bilgisi.");
+                return Unauthorized("Invalid USER TOKEN INFORMATION.");
 
             var ResponseDto = await _UserService.UpdateAsync(Id, UserId, Dto);
 
             if (ResponseDto == null)
-                return StatusCode(500, "Kullanıcı güncellenirken bir sunucu hatası meydana geldi.");
+                return StatusCode(500, "A server error occurred when the user was updated.");
 
             if (ResponseDto.IsUpdated)
                 return Ok(Dto);
 
             return ResponseDto.Issue switch
             { 
-                UpdateIssue.NotFound => NotFound($"User ID'si {Id} olan kullanıcı bulunamadı."),
-                UpdateIssue.SameContent => BadRequest("Kullanıcı adı kullanımda."),
-                UpdateIssue.NotOwner => Unauthorized("Size ait olmayan bir kullanıcı profilini güncelleyemezsiniz."),
-                _ => BadRequest("Kullanıcı güncelleme işlemi gerçekleştirilemedi.")
+                UpdateIssue.NotFound => NotFound($"The user with ID {Id} was not found.."),
+                UpdateIssue.SameContent => BadRequest("Username in use."),
+                UpdateIssue.NotOwner => Unauthorized("You cannot update a user profile that does not belong to you."),
+                _ => BadRequest("The user could not be updated.")
             };
         }
 
@@ -106,20 +106,20 @@ namespace Moviemo.Controllers
         public async Task<IActionResult> DeleteUser(long Id)
         {
             if (!long.TryParse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value, out var UserId))
-                return Unauthorized("Geçersiz kullanıcı token bilgisi.");
+                return Unauthorized("Invalid user token information..");
 
             var ResponseDto = await _UserService.DeleteAsync(Id, UserId);
 
             if (ResponseDto == null)
-                return StatusCode(500, "Kullanıcı silinirken bir sunucu hatası meydana geldi.");
+                return StatusCode(500, "A server error occurred when the user was deleted.");
 
             if (ResponseDto.IsDeleted) return NoContent();
 
             return ResponseDto.Issue switch
             { 
-                DeleteIssue.NotFound => NotFound($"User ID'si {Id} olan kullanıcı bulunamadı."),
-                DeleteIssue.NotOwner => Unauthorized("Size ait olmayan bir kullanıcı profilini silemezsiniz."),
-                _ => BadRequest("Kullanıcı silme işlemi gerçekleştirilemedi.")
+                DeleteIssue.NotFound => NotFound($"The user with ID {Id} was not found.."),
+                DeleteIssue.NotOwner => Unauthorized("You cannot delete a user profile that does not belong to you."),
+                _ => BadRequest("User deletion could not be performed. ")
             };
         }
 
@@ -130,7 +130,7 @@ namespace Moviemo.Controllers
             var ResponseDto = await _UserService.LoginAsync(Dto);
 
             if (ResponseDto == null) 
-                return StatusCode(500, "Kullanıcı girişi sırasında bir sunucu hatası meydana geldi.");
+                return StatusCode(500, "A server error occurred during the user login.");
 
             if (ResponseDto.Issue == LoginIssue.None)
                 return Ok(ResponseDto);
@@ -138,8 +138,8 @@ namespace Moviemo.Controllers
             return ResponseDto.Issue switch
             {
                 LoginIssue.NotFound => NotFound("An account with the username entered was not found."),
-                LoginIssue.IncorrectPassword => BadRequest("Parola hatalı."),
-                _ => BadRequest("Kullanıcı girişi gerçekleştirilemedi.")
+                LoginIssue.IncorrectPassword => BadRequest("Password wrong."),
+                _ => BadRequest("User login could not be realized.")
             };
         }
 
@@ -148,15 +148,15 @@ namespace Moviemo.Controllers
         public async Task<IActionResult> RefreshTokens([FromBody] RefreshTokenRequestDto Dto)
         {
             if (!long.TryParse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value, out var UserId))
-                return Unauthorized("Geçersiz kullanıcı token bilgisi.");
+                return Unauthorized("Invalid USER TOKEN INFORMATION.");
 
             var Result = await _UserService.RefreshTokensAsync(UserId, Dto);
 
             if (Result == null)
-                return StatusCode(500, "Token yenilenirken bir sunucu hatası meydana geldi.");
+                return StatusCode(500, "A server error occurred while the token was renewed.");
 
             if (Result.AccessToken == null || Result.RefreshToken == null) 
-                return Unauthorized("Geçersiz refresh token");
+                return Unauthorized("Invalid refresh token");
 
             return Ok(Result);
         }
@@ -166,18 +166,18 @@ namespace Moviemo.Controllers
         public async Task<IActionResult> ChangePassword(long Id, [FromBody] ChangePasswordDto Dto)
         {
             if (!long.TryParse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value, out var UserId))
-                return Unauthorized("Geçersiz kullanıcı token bilgisi.");
+                return Unauthorized("Invalid USER TOKEN INFORMATION.");
 
             var ResponseDto = await _UserService.ChangePasswordAsync(Dto, Id, UserId);
 
             if (ResponseDto == null)
-                return StatusCode(500, "Kullanıcı parolası değiştirilirken bir sunucu hatası meydana geldi.");
+                return StatusCode(500, "A server error occurred when changing the user password.");
 
             return ResponseDto.Issue switch
             {
                 PasswordChangeIssue.None => Ok(ResponseDto),
-                PasswordChangeIssue.IncorrectOldPassword => BadRequest("Eski parola hatalı girildi."),
-                _ => BadRequest("Parola değiştirme işlemi gerçekleştirilmedi.")
+                PasswordChangeIssue.IncorrectOldPassword => BadRequest("Old password entered incorrectly."),
+                _ => BadRequest("No password replacement process has been performed.")
             };
         }
     }

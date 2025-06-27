@@ -34,7 +34,7 @@ namespace Moviemo.Controllers
             }
 
             if (Comments == null) 
-                return StatusCode(500, "Tüm film bilgileri alınırken bir sunucu hatası meydana geldi.");
+                return StatusCode(500, "A server error occurred while retrieving all movie information.");
 
             return Ok(Comments);
         }
@@ -60,7 +60,7 @@ namespace Moviemo.Controllers
 
             var Comment = await _CommentService.CreateAsync(Dto, UserId);
 
-            if (Comment == null) return StatusCode(500, "Yorum oluşturulurken bir sunucu hatası meydana geldi");
+            if (Comment == null) return StatusCode(500, "A server error occurred while creating the comment");
 
             return Ok(Comment);
         }
@@ -71,21 +71,21 @@ namespace Moviemo.Controllers
         public async Task<IActionResult> UpdateComment(long Id, [FromBody] CommentUpdateDto Dto)
         {
             if (!long.TryParse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value, out var UserId))
-                return Unauthorized("Geçersiz kullanıcı token bilgisi.");
+                return Unauthorized("Invalid user token information.");
 
             var ResponseDto = await _CommentService.UpdateAsync(Id, UserId, Dto);
 
             if (ResponseDto == null) 
-                return StatusCode(500, "Yorum güncellenirken bir sunucu hatası meydana geldi.");
+                return StatusCode(500, "A server error occurred while updating the comment.");
 
             if (ResponseDto.IsUpdated)
                 return Ok(Dto);
 
             return ResponseDto.Issue switch
             {
-                UpdateIssue.NotFound => NotFound($"Comment ID'si {Id} olan comment bulunamadı."),
-                UpdateIssue.NotOwner => Unauthorized("Size ait olmayan bir yorumu güncelleyemezsiniz."),
-                _ => BadRequest("Yorum güncelleme işlemi gerçekleştirilemedi.")
+                UpdateIssue.NotFound => NotFound($"The comment with ID {Id} was not found."),
+                UpdateIssue.NotOwner => Unauthorized("You cannot update a comment that doesn't belong to you."),
+                _ => BadRequest("The comment update operation could not be performed.")
             };
         }
 
@@ -95,20 +95,20 @@ namespace Moviemo.Controllers
         public async Task<IActionResult> DeleteComment(long Id)
         {
             if (!long.TryParse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value, out var UserId))
-                return Unauthorized("Geçersiz kullanıcı token bilgisi.");
+                return Unauthorized("Invalid user token information.");
 
             var ResponseDto = await _CommentService.DeleteAsync(Id, UserId);
 
             if (ResponseDto == null)
-                return StatusCode(500, "Yorum silinirken bir sunucu hatası meydana geldi.");
+                return StatusCode(500, "A server error occurred while deleting the comment.");
 
             if (ResponseDto.IsDeleted) return NoContent();
 
             return ResponseDto.Issue switch
             {
-                DeleteIssue.NotFound => NotFound("Silinmek istenen yorum bulunamadı."),
-                DeleteIssue.NotOwner => Unauthorized("Size ait olmayan bir yorumu silemezsiniz."),
-                _ => BadRequest("Yorum silme işlemi gerçekleştirilemedi.")
+                DeleteIssue.NotFound => NotFound("No comment found to be deleted."),
+                DeleteIssue.NotOwner => Unauthorized("You cannot delete a comment that does not belong to you."),
+                _ => BadRequest("Comment deletion could not be performed.")
             };
         }
     }

@@ -21,8 +21,7 @@ namespace Moviemo.Services
 
         public async Task<List<VoteGetDto>?> GetAllAsync()
         {
-            _Logger.LogInformation("Tüm oy bilgileri alınıyor...");
-
+            _Logger.LogInformation("All vote information is being retrieved...");
             try
             {
                 return await _Context.Votes
@@ -39,15 +38,13 @@ namespace Moviemo.Services
             }
             catch (Exception Ex)
             {
-                _Logger.LogError(Ex, "Tüm oy bilgileri alınırken bir hata meydana geldi.");
-                return null;
+                _Logger.LogError(Ex, "An error occurred while retrieving all vote information."); return null;
             }
         }
 
         public async Task<VoteGetDto?> GetByIdAsync(long Id)
         {
-            _Logger.LogInformation("Vote ID'si {Id} olan vote alınıyor...", Id);
-
+            _Logger.LogInformation("Vote with ID {Id} is being retrieved...", Id);
             try
             {
                 return await _Context.Votes
@@ -64,15 +61,13 @@ namespace Moviemo.Services
             }
             catch (Exception Ex)
             {
-                _Logger.LogError(Ex, "Oy bilgisi alınırken bir hata meydana geldi.");
-                return null;
+                _Logger.LogError(Ex, "An error occurred while retrieving vote information."); return null;
             }
         }
 
         public async Task<VoteGetDto?> GetByUserAndCommentIdAsync(long? UserId, long? CommentId)
         {
-            _Logger.LogInformation("User ID'si {UserId} Comment ID'si {CommentId} olan oy alınıyor...", UserId, CommentId);
-
+            _Logger.LogInformation("Vote with User ID {UserId} and Comment ID {CommentId} is being retrieved...", UserId, CommentId);
             try
             {
                 return await _Context.Votes.Where(V => V.UserId == UserId).Where(V => V.CommentId == CommentId).Select(V => new VoteGetDto
@@ -85,15 +80,13 @@ namespace Moviemo.Services
             }
             catch (Exception Ex)
             {
-                _Logger.LogError(Ex, "Filme ait tüm yorum bilgileri alınırken bir sorun meydana geldi.");
-                return null;
+                _Logger.LogError(Ex, "A problem occurred while retrieving all comment information for the movie."); return null;
             }
         }
 
         public async Task<CreateResponseDto?> CreateAsync(VoteCreateDto Dto, long UserId)
         {
-            _Logger.LogInformation("Yeni oy oluşturuluyor: {@VoteCreateDto}", Dto);
-
+            _Logger.LogInformation("Creating new vote: {@VoteCreateDto}", Dto);
             try
             {
                 var User = await _Context.Users.Include(U => U.Votes).FirstOrDefaultAsync(U => U.Id == UserId);
@@ -112,15 +105,13 @@ namespace Moviemo.Services
             }
             catch (Exception Ex)
             {
-                _Logger.LogError(Ex, "Oy oluşturulurken bir hata meydana geldi.");
-                return null;
+                _Logger.LogError(Ex, "An error occurred while creating the vote."); return null;
             }
         }
 
         public async Task<UpdateResponseDto?> UpdateAsync(long Id, long UserId, VoteUpdateDto Dto)
         {
-            _Logger.LogInformation("Vote ID'si {Id} olan oy güncelleniyor: {@VoteUpdateDto}", Id, Dto);
-
+            _Logger.LogInformation("Updating vote with ID {Id}: {@VoteUpdateDto}", Id, Dto);
             try
             {
                 var Vote = await _Context.Votes.FindAsync(Id);
@@ -147,21 +138,18 @@ namespace Moviemo.Services
 
                 await _Context.SaveChangesAsync();
 
-                _Logger.LogInformation("Vote ID'si {Id} olan oy başarıyla güncellendi.", Id);
-
+                _Logger.LogInformation("Vote with ID {Id} has been successfully updated.", Id);
                 return new UpdateResponseDto { IsUpdated = true };
             } 
             catch (Exception Ex)
             {
-                _Logger.LogError(Ex, "Oy bilgisi alınırken bir hata meydana geldi.");
-                return null;
+                _Logger.LogError(Ex, "An error occurred while retrieving vote information."); return null;
             }
         }
 
         public async Task<DeleteResponseDto?> DeleteAsync(long Id, long UserId)
         {
-            _Logger.LogInformation("Vote ID'si {Id} olan oy siliniyor...", Id);
-             
+            _Logger.LogInformation("Deleting vote with ID {Id}...", Id);
             try
             {
                 var Vote = await _Context.Votes.FindAsync(Id);
@@ -176,14 +164,12 @@ namespace Moviemo.Services
 
                 await _Context.SaveChangesAsync();
 
-                _Logger.LogInformation("Vote ID'si {Id} olan oy başarıyla silindi.", Id);
-
+                _Logger.LogInformation("Vote with ID {Id} has been successfully deleted.", Id);
                 return new DeleteResponseDto { IsDeleted = true };
             } 
             catch (Exception Ex)
             {
-                _Logger.LogError(Ex, "Oy silinirken bir hata meydana geldi.");
-                return null;
+                _Logger.LogError(Ex, "An error occurred while deleting the vote."); return null;
             }
 
             

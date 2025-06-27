@@ -24,7 +24,7 @@ namespace Moviemo.Services
 
         public async Task<List<MovieGetDto>?> GetAllAsync()
         {
-            _Logger.LogInformation("Tüm film bilgileri alınıyor...");
+            _Logger.LogInformation("All movie information is getting...");
 
             try
             {
@@ -64,14 +64,14 @@ namespace Moviemo.Services
             }
             catch (Exception Ex)
             {
-                _Logger.LogError(Ex, "Tüm film bilgileri alınırken bir hata meydana geldi.");
+                _Logger.LogError(Ex, "An error occurred while receiving all movie information.");
                 return null;
             };
         }
 
         public async Task<MovieGetDto?> GetByIdAsync(long Id)
         {
-            _Logger.LogInformation("Movie ID'si {Id} olan film bilgisi alınıyor...", Id);
+            _Logger.LogInformation("The movie information with ID {Id} is being retrieved....", Id);
 
             try
             {
@@ -112,14 +112,14 @@ namespace Moviemo.Services
                 .FirstOrDefaultAsync(M => M.Id == Id);
             } catch (Exception Ex)
             {
-                _Logger.LogError(Ex, "Film bilgisi alınırken bir hata meydana geldi.");
+                _Logger.LogError(Ex, "An error occurred while getting movie information.");
                 return null;
             }
         }
 
         public async Task<MovieCreateDto?> CreateAsync(MovieCreateDto Dto)
         {
-            _Logger.LogInformation("Yeni film oluşturuluyor: {@MovieCreateDto}", Dto);
+            _Logger.LogInformation("New Movie is being created: {@MovieCreateDto}", Dto);
 
             try
             {
@@ -134,20 +134,20 @@ namespace Moviemo.Services
                 await _Context.Movies.AddAsync(Movie);
                 await _Context.SaveChangesAsync();
 
-                _Logger.LogInformation("Film başarıyla oluşturuldu.");
+                _Logger.LogInformation("The film was created successfully.");
 
                 return Dto;
             }
             catch (Exception Ex)
             {
-                _Logger.LogError(Ex, "Film oluşturulurken bir hata meydana geldi.");
+                _Logger.LogError(Ex, "An error occurred when creating a movie.");
                 return null;
             }
         }
 
         public async Task<UpdateResponseDto?> UpdateAsync(long Id, MovieUpdateDto Dto)
         {
-            _Logger.LogInformation("Movie ID'si {Id} olan film güncelleniyor: {@MovieUpdateDto}", Id, Dto);
+            _Logger.LogInformation("Updating movie with ID {Id}: {@MovieUpdateDto}", Id, Dto);
 
             try
             {
@@ -173,20 +173,20 @@ namespace Moviemo.Services
                 await _Context.SaveChangesAsync();
 
 
-                _Logger.LogInformation("Movie ID'si {Id} olan film başarıyla güncellendi.", Id);
+                _Logger.LogInformation("The movie with ID {Id} has been successfully updated.", Id);
 
                 return new UpdateResponseDto { IsUpdated = true };
             }
             catch (Exception Ex)
             {
-                _Logger.LogError(Ex, "Film güncellenirken bir hata meydana geldi.");
+                _Logger.LogError(Ex, "A mistake occurred while the film was updated.");
                 return null;
             }
         }
 
         public async Task<DeleteResponseDto?> DeleteAsync(long Id)
         {
-            _Logger.LogInformation("Movie ID'si {Id} olan yorum siliniyor...", Id);
+            _Logger.LogInformation("Deleting comment with ID {Id} for the movie....", Id);
 
             try
             {
@@ -198,20 +198,20 @@ namespace Moviemo.Services
                 _Context.Movies.Remove(Movie);
                 await _Context.SaveChangesAsync();
 
-                _Logger.LogInformation("Movie ID'si {Id} olan film başarıyla silindi.", Id);
+                _Logger.LogInformation("The movie with ID {Id} has been successfully deleted.", Id);
 
                 return new DeleteResponseDto { IsDeleted = true };
             }
             catch (Exception Ex)
             {
-                _Logger.LogError(Ex, "Film silinirken bir hata meydana geldi.");
+                _Logger.LogError(Ex, "An error occurred when the movie was deleted.");
                 return null;
             }
         }
 
         public async Task<List<SearchResponseDto>?> SearchAsync(string Query)
         {
-            _Logger.LogInformation("{Query} başlığı aranıyor...", Query);
+            _Logger.LogInformation("The title {Query} is being searched...", Query);
 
             try
             {
@@ -229,7 +229,7 @@ namespace Moviemo.Services
             }
             catch (Exception Ex)
             {
-                _Logger.LogError(Ex, "Arama yapılırken bir hata meydana geldi.");
+                _Logger.LogError(Ex, "An error occurred during the search.");
                 return null;
             }
 
@@ -237,13 +237,13 @@ namespace Moviemo.Services
 
         public async Task<MoviePageDto?> GetByPageSizeAsync(int PageIndex, int PageSize)
         {
-            _Logger.LogInformation("Sayfa: {PageIndex} - Adet: {PageSize} alınıyor...", PageIndex, PageSize);
+            _Logger.LogInformation("Page: {PageIndex} - Count: {PageSize} is being retrieved...", PageIndex, PageSize);
 
             try
             {
                 if (PageIndex <= 0 || PageSize <= 0)
                 {
-                    throw new Exception("Sayfa Numarası veya Sayfa Boyutu hatalı girildi.");
+                    throw new Exception("Page number or page size entered incorrect.");
                 }
 
                 var TotalMovies = await _Context.Movies.CountAsync();
@@ -271,7 +271,7 @@ namespace Moviemo.Services
             }
             catch (Exception Ex)
             {
-                _Logger.LogError(Ex, "Sayfa bilgisi alınırken bir hata meydana geldi.");
+                _Logger.LogError(Ex, "An error occurred during the page information.");
                 return null;
             }
         }

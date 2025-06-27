@@ -21,7 +21,7 @@ namespace Moviemo.Services
 
         public async Task<List<ReportGetDto>?> GetAllAsync()
         {
-            _Logger.LogInformation("Tüm rapor bilgileri alınıyor...");
+            _Logger.LogInformation("All report information is received...");
 
             try
             {
@@ -39,14 +39,14 @@ namespace Moviemo.Services
             }
             catch (Exception Ex)
             {
-                _Logger.LogError(Ex, "Tüm rapor bilgileri alınırken bir hata meydana geldi.");
+                _Logger.LogError(Ex, "An error occurred during receiving all report information.");
                 return null;
             }
         }
 
         public async Task<ReportGetDto?> GetByIdAsync(long Id)
         {
-            _Logger.LogInformation("Report ID'si {Id} olan rapor bilgisi alınıyor...", Id);
+            _Logger.LogInformation("The report information with ID {Id} is being retrieved....", Id);
 
             try
             {
@@ -64,14 +64,14 @@ namespace Moviemo.Services
             }
             catch (Exception Ex)
             {
-                _Logger.LogError(Ex, "Rapor bilgisi alınırken bir hata meydana geldi.");
+                _Logger.LogError(Ex, "An error occurred during the report information.");
                 return null;
             }
         }
 
         public async Task<ReportCreateDto?> CreateAsync(ReportCreateDto Dto, long UserId)
         {
-            _Logger.LogInformation("Yeni rapor oluşturuluyor: {@ReportCreateDto}", Dto);
+            _Logger.LogInformation("New report is being created: {@ReportCreateDto}", Dto);
 
             try
             {
@@ -85,20 +85,20 @@ namespace Moviemo.Services
                 await _Context.Reports.AddAsync(Report);
                 await _Context.SaveChangesAsync();
 
-                _Logger.LogInformation("Rapor başarıyla oluşturuldu.");
+                _Logger.LogInformation("The report was created successfully.");
 
                 return Dto;
             }
             catch (Exception Ex)
             {
-                _Logger.LogError(Ex, "Rapor oluşturulurken bir hata meydana geldi.");
+                _Logger.LogError(Ex, "An error occurred when creating a report.");
                 return null;
             }
         }
 
         public async Task<UpdateResponseDto?> UpdateAsync(long Id, long UserId, ReportUpdateDto Dto)
         {
-            _Logger.LogInformation("Report ID'si {Id} olan rapor güncelleniyor: {@ReportUpdateDto}", Id , Dto);
+            _Logger.LogInformation("Updating report with ID {Id}: {@ReportUpdateDto}", Id , Dto);
 
             try
             {
@@ -126,20 +126,20 @@ namespace Moviemo.Services
 
                 await _Context.SaveChangesAsync();
 
-                _Logger.LogInformation("Report ID'si {Id} olan rapor başarıyla güncellendi", Id);
+                _Logger.LogInformation("The report with ID {Id} has been successfully updated.", Id);
 
                 return new UpdateResponseDto { IsUpdated = true };
             }
             catch (Exception Ex)
             {
-                _Logger.LogError(Ex, "Rapor güncellenirken bir hata meydana geldi.");
+                _Logger.LogError(Ex, "An error occurred during the report updating.");
                 return null;
             }
         }
 
         public async Task<DeleteResponseDto?> DeleteAsync(long Id, long UserId)
         {
-            _Logger.LogInformation("Report ID'si {Id} olan rapor siliniyor...", Id);
+            _Logger.LogInformation("Deleting report with ID {Id}...", Id);
 
             try
             {
@@ -154,13 +154,13 @@ namespace Moviemo.Services
                 _Context.Reports.Remove(Report);
                 await _Context.SaveChangesAsync();
 
-                _Logger.LogInformation("Report ID'si {Id} olan rapor başarıyla silindi.", Id);
+                _Logger.LogInformation("The report with ID {Id} has been successfully deleted..", Id);
 
                 return new DeleteResponseDto { IsDeleted = true };
             }
             catch (Exception Ex)
             {
-                _Logger.LogError(Ex, "Rapor silinirken bir hata meydana geldi.");
+                _Logger.LogError(Ex, "An error occurred when deleting the report.");
                 return null;
             }
         }

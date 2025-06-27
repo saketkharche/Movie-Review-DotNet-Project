@@ -29,7 +29,7 @@ namespace Moviemo.Controllers
 
                 if (Response == null)
                 {
-                    return StatusCode(500, "Sayfa bilgisi alınırken bir sunucu hatası meydana geldi.");
+                    return StatusCode(500, "A server error occurred during the page information.");
                 }
 
                 return Ok(Response);
@@ -38,7 +38,7 @@ namespace Moviemo.Controllers
             var Movies = await _MovieService.GetAllAsync();
 
             if (Movies == null)
-                return StatusCode(500, "Tüm film bilgileri alınırken bir sunucu hatası meydana geldi.");
+                return StatusCode(500, "A server error occurred while receiving all movie information.");
 
             return Ok(Movies);
         }
@@ -62,7 +62,7 @@ namespace Moviemo.Controllers
             var Movie = await _MovieService.CreateAsync(Dto);
 
             if (Movie == null)
-                return StatusCode(500, "Film oluşturulurken bir sunucu hatası meydana geldi.");
+                return StatusCode(500, "A server error occurred while creating a film.");
 
             return Ok(Movie);
         }
@@ -75,15 +75,15 @@ namespace Moviemo.Controllers
             var ResponseDto = await _MovieService.UpdateAsync(Id, Dto);
 
             if (ResponseDto == null)
-                return StatusCode(500, "Yorum güncellenirken bir sunucu hatası meydana geldi.");
+                return StatusCode(500, "A server error occurred while updating the comment.");
 
             if (ResponseDto.IsUpdated)
                 return Ok(Dto);
 
             return ResponseDto.Issue switch
             {
-                UpdateIssue.NotFound => NotFound($"Movie ID'si {Id} olan film bulunamadı."),
-                _ => BadRequest("Film güncelleştirme işlemi gerçekleştirilemedi.")
+                UpdateIssue.NotFound => NotFound($"The movie with ID {Id} was not found."),
+                _ => BadRequest("The film update could not be performed.")
             };
         }
 
@@ -95,14 +95,14 @@ namespace Moviemo.Controllers
             var ResponseDto = await _MovieService.DeleteAsync(Id);
 
             if (ResponseDto == null)
-                return StatusCode(500, "Film silinirken bir sunucu hatası meydana geldi");
+                return StatusCode(500, "A server error occurred when the movie was deleted");
 
             if (ResponseDto.IsDeleted) return NoContent();
 
             return ResponseDto.Issue switch
             {
-                DeleteIssue.NotFound => NotFound($"Movie ID'si {Id} olan film bulunamadı"),
-                _ => BadRequest("Film silme işlemi gerçekleştirilemedi.")
+                DeleteIssue.NotFound => NotFound($"The movie with ID {Id} was not found."),
+                _ => BadRequest("Film deletion could not be performed.")
             };
         }
 
@@ -113,7 +113,7 @@ namespace Moviemo.Controllers
 
             if (Results == null)
             {
-                return StatusCode(500, "Arama yapılırken bir sunucu hatası meydana geldi.");
+                return StatusCode(500, "A server error occurred during the search.");
             }
 
             return Ok(Results);
