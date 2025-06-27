@@ -280,6 +280,17 @@ export default function Navbar() {
           </div>
 
           <div className="hidden md:flex items-center space-x-6 lg:space-x-8">
+            {/* IMDB Link */}
+            <Link
+              href="/IMDB"
+              // target="_blank"
+              rel="noopener noreferrer"
+              className="relative px-3 py-2 text-gray-300 hover:text-white transition-colors duration-200 group"
+            >
+              Explore
+              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-red-500 to-pink-600 group-hover:w-full transition-all duration-300"></span>
+            </Link>
+
             {isLoggedIn && isAdmin && (
               <Link
                 href="/admin"
@@ -526,6 +537,17 @@ export default function Navbar() {
         {isMobileMenuOpen && (
           <div className="md:hidden mt-4 pb-4 border-t border-gray-700/50">
             <div className="flex flex-col space-y-4 pt-4">
+              {/* IMDB Link for Mobile */}
+              <Link
+                href="https://www.imdb.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-gray-300 hover:text-white transition-colors duration-200 px-2 py-2"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                IMDB
+              </Link>
+
               {isLoggedIn && isAdmin && (
                 <Link
                   href="/admin"
