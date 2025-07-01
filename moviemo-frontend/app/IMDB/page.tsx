@@ -12,7 +12,8 @@ import {
   FaTimes,
   FaFilter,
   FaTv,
-  FaUserAlt
+  FaUserAlt,
+  FaPlay
 } from "react-icons/fa";
 
 const TMDB_READ_TOKEN = "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJmODBhY2MwMDFhZDkzZWMwZDMxNDE2YmEyNGY0OTU0ZSIsIm5iZiI6MTc1MTE5MDExNi4zNTgsInN1YiI6IjY4NjEwYTY0YWJkMmQyZmJlNDkxNWM3YiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.LzpqdZIbOZBFXFmzkbDqp5koMa8lt_LKIh-ef53y5uc";
@@ -48,6 +49,12 @@ export default function MovieSearchPage() {
   const observer = useRef<IntersectionObserver | null>(null);
   const lastItemRef = useRef<HTMLDivElement>(null);
   const scrollPositionRef = useRef(0);
+
+  // Streaming states
+  const [showPlayer, setShowPlayer] = useState(false);
+  const [streamLoading, setStreamLoading] = useState(false);
+  const [streamUrl, setStreamUrl] = useState("");
+  const [streamTitle, setStreamTitle] = useState("");
 
   // Fetch genres for both movies and TV
   useEffect(() => {
@@ -452,6 +459,48 @@ export default function MovieSearchPage() {
     fetchPopularMovies(1);
   }, [fetchPopularMovies]);
 
+  // Fetch streaming URL
+  const fetchStreamingUrl = async (title: string, imdbId?: string) => {
+    try {
+      setStreamLoading(true);
+      setStreamTitle(title);
+
+      // First try using IMDb ID if available
+      if (imdbId) {
+        setStreamUrl(`https://111movies.com/movie/${imdbId}`);
+        setShowPlayer(true);
+        return;
+      }
+
+      // Fallback to title search
+      const searchRes = await fetch(
+          `https://111movies.com/search/${encodeURIComponent(title)}`
+      );
+      const html = await searchRes.text();
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(html, "text/html");
+
+      // Find first result link
+      const firstResult = doc.querySelector(".ml-movie .ml-mask");
+      if (firstResult) {
+        const href = firstResult.getAttribute("href");
+        if (href) {
+          setStreamUrl(`https://111movies.com${href}`);
+          setShowPlayer(true);
+          return;
+        }
+      }
+
+      // If no results found
+      alert("Streaming not available for this title");
+    } catch (error) {
+      console.error("Failed to fetch streaming URL:", error);
+      alert("Failed to load streaming options");
+    } finally {
+      setStreamLoading(false);
+    }
+  };
+
   const handlePageChange = (newPage: number) => {
     if (newPage >= 1 && newPage <= totalPages) {
       setPage(newPage);
@@ -584,6 +633,51 @@ export default function MovieSearchPage() {
 
   return (
       <div className="min-h-screen bg-gradient-to-b from-gray-900 to-black text-white">
+        {/* Streaming Player Modal */}
+        {showPlayer && (
+            <div className="fixed inset-0 bg-black bg-opacity-75 z-50 flex items-center justify-center p-4">
+              <div className="bg-gray-900 rounded-lg w-full max-w-4xl">
+                <div className="flex justify-between items-center p-4 border-b border-gray-700">
+                  <h3 className="text-xl font-bold text-white">
+                    Streaming: {streamTitle}
+                  </h3>
+                  <button
+                      onClick={() => setShowPlayer(false)}
+                      className="text-gray-400 hover:text-white text-2xl"
+                  >
+                    &times;
+                  </button>
+                </div>
+
+                <div className="relative pb-[56.25%] h-0">
+                  {streamUrl ? (
+                      <iframe
+                          src={streamUrl}
+                          title={`111movies - ${streamTitle}`}
+                          className="absolute top-0 left-0 w-full h-full"
+                          allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+                          allowFullScreen
+                      />
+                  ) : (
+                      <div className="absolute inset-0 flex items-center justify-center bg-gray-800">
+                        <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-purple-500"></div>
+                      </div>
+                  )}
+                </div>
+
+                <div className="p-4 text-sm text-gray-400">
+                  <p>
+                    Streaming via MovieMo • Content provided by third-party services
+                  </p>
+                  <p className="mt-2 text-xs">
+                    <strong>Disclaimer:</strong> MovieMo is a content aggregator and
+                    does not host any videos. Use at your own discretion.
+                  </p>
+                </div>
+              </div>
+            </div>
+        )}
+
         <main className="container mx-auto px-4 py-8">
           <div className="text-center mb-12">
             <h1 className="text-3xl md:text-5xl font-bold mb-2 bg-gradient-to-r from-red-500 to-pink-600 bg-clip-text text-transparent">
@@ -805,6 +899,23 @@ export default function MovieSearchPage() {
                           <p><strong>Production:</strong> {selectedItem.production_companies.join(', ')}</p>
                         </div>
 
+                        {/* Watch Now Button */}
+                        <button
+                            onClick={() => fetchStreamingUrl(
+                                selectedItem.title,
+                                selectedItem.imdbID
+                            )}
+                            disabled={streamLoading}
+                            className={`mt-4 px-6 py-3 rounded-lg text-white font-semibold flex items-center justify-center gap-2 transition ${
+                                streamLoading
+                                    ? "bg-gray-500 cursor-not-allowed"
+                                    : "bg-gradient-to-r from-green-500 to-emerald-600 hover:scale-105"
+                            }`}
+                        >
+                          <FaPlay />
+                          {streamLoading ? "Loading Stream..." : "Watch Now"}
+                        </button>
+
                         {/* Videos */}
                         {selectedItem.videos.length > 0 && (
                             <div className="mt-4">
@@ -887,6 +998,20 @@ export default function MovieSearchPage() {
                           <p><strong>Genres:</strong> {selectedItem.genres}</p>
                           <p><strong>Production:</strong> {selectedItem.production_companies.join(', ')}</p>
                         </div>
+
+                        {/* Watch Now Button */}
+                        <button
+                            onClick={() => fetchStreamingUrl(selectedItem.title)}
+                            disabled={streamLoading}
+                            className={`mt-4 px-6 py-3 rounded-lg text-white font-semibold flex items-center justify-center gap-2 transition ${
+                                streamLoading
+                                    ? "bg-gray-500 cursor-not-allowed"
+                                    : "bg-gradient-to-r from-green-500 to-emerald-600 hover:scale-105"
+                            }`}
+                        >
+                          <FaPlay />
+                          {streamLoading ? "Loading Stream..." : "Watch Now"}
+                        </button>
 
                         {/* Videos */}
                         {selectedItem.videos.length > 0 && (

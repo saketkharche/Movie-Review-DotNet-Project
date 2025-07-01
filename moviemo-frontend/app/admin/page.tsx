@@ -783,7 +783,7 @@ const AdminPanel: React.FC = () => {
                 { id: "add-movie", icon: "🎬", label: "Add Movie" },
                 { id: "edit-movie", icon: "✏️", label: "Edit Movie" },
                 { id: "remove-movie", icon: "🗑️", label: "Remove Movie" },
-                ...(userRole === "1" || userRole === "2"
+                ...(userRole === "2"
                     ? [
                       { id: "reports", icon: "📊", label: "Reports" },
                     ]
