@@ -653,7 +653,7 @@ export default function MovieSearchPage() {
                   {streamUrl ? (
                       <iframe
                           src={streamUrl}
-                          title={`111movies - ${streamTitle}`}
+                          title={`MovieMo - ${streamTitle}`}
                           className="absolute top-0 left-0 w-full h-full"
                           allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
                           allowFullScreen
