@@ -56,6 +56,11 @@ export default function MovieSearchPage() {
   const [streamUrl, setStreamUrl] = useState("");
   const [streamTitle, setStreamTitle] = useState("");
 
+  // TV series states
+  const [selectedSeason, setSelectedSeason] = useState(1);
+  const [selectedEpisode, setSelectedEpisode] = useState(1);
+  const [episodes, setEpisodes] = useState<any[]>([]);
+
   // Fetch genres for both movies and TV
   useEffect(() => {
     const fetchGenres = async () => {
@@ -224,6 +229,8 @@ export default function MovieSearchPage() {
     setError("");
     setSimilarItems([]);
     setCurrentCollection(null);
+    setSelectedSeason(1);
+    setSelectedEpisode(1);
 
     try {
       let itemDetails = null;
@@ -459,40 +466,83 @@ export default function MovieSearchPage() {
     fetchPopularMovies(1);
   }, [fetchPopularMovies]);
 
+  // Update episodes when season changes
+  useEffect(() => {
+    if (selectedItem?.media_type === 'tv' && selectedItem.seasonsData?.length > 0) {
+      const fetchEpisodes = async () => {
+        try {
+          const seasonData = selectedItem.seasonsData.find(
+              (s: any) => s.season_number === selectedSeason
+          );
+
+          if (seasonData?.episode_count) {
+            const episodesArray = [];
+            for (let i = 1; i <= seasonData.episode_count; i++) {
+              episodesArray.push({
+                number: i,
+                title: `Episode ${i}`
+              });
+            }
+            setEpisodes(episodesArray);
+            setSelectedEpisode(1);
+          }
+        } catch (error) {
+          console.error("Failed to load episodes", error);
+        }
+      };
+
+      fetchEpisodes();
+    }
+  }, [selectedSeason, selectedItem]);
+
   // Fetch streaming URL
-  const fetchStreamingUrl = async (title: string, imdbId?: string) => {
+  const fetchStreamingUrl = async (item: any, season?: number, episode?: number) => {
     try {
       setStreamLoading(true);
-      setStreamTitle(title);
+      setStreamTitle(item.title || item.name);
 
-      // First try using IMDb ID if available
-      if (imdbId) {
-        setStreamUrl(`https://111movies.com/movie/${imdbId}`);
-        setShowPlayer(true);
-        return;
-      }
-
-      // Fallback to title search
-      const searchRes = await fetch(
-          `https://111movies.com/search/${encodeURIComponent(title)}`
-      );
-      const html = await searchRes.text();
-      const parser = new DOMParser();
-      const doc = parser.parseFromString(html, "text/html");
-
-      // Find first result link
-      const firstResult = doc.querySelector(".ml-movie .ml-mask");
-      if (firstResult) {
-        const href = firstResult.getAttribute("href");
-        if (href) {
-          setStreamUrl(`https://111movies.com${href}`);
+      if (item.media_type === 'movie') {
+        // First try using IMDb ID if available
+        if (item.imdbID) {
+          setStreamUrl(`https://111movies.com/movie/${item.imdbID}`);
           setShowPlayer(true);
           return;
         }
-      }
 
-      // If no results found
-      alert("Streaming not available for this title");
+        // Fallback to title search
+        const searchRes = await fetch(
+            `https://111movies.com/search/${encodeURIComponent(item.title)}`
+        );
+        const html = await searchRes.text();
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, "text/html");
+
+        // Find first result link
+        const firstResult = doc.querySelector(".ml-movie .ml-mask");
+        if (firstResult) {
+          const href = firstResult.getAttribute("href");
+          if (href) {
+            setStreamUrl(`https://111movies.com${href}`);
+            setShowPlayer(true);
+            return;
+          }
+        }
+
+        // If no results found
+        alert("Streaming not available for this title");
+      }
+      else if (item.media_type === 'tv') {
+        // TV series streaming
+        const seasonNum = season || selectedSeason;
+        const episodeNum = episode || selectedEpisode;
+
+        if (item.imdbID) {
+          setStreamUrl(`https://111movies.com/tv/${item.imdbID}/${seasonNum}/${episodeNum}`);
+        } else {
+          setStreamUrl(`https://111movies.com/tv/${item.id}/${seasonNum}/${episodeNum}`);
+        }
+        setShowPlayer(true);
+      }
     } catch (error) {
       console.error("Failed to fetch streaming URL:", error);
       alert("Failed to load streaming options");
@@ -901,10 +951,7 @@ export default function MovieSearchPage() {
 
                         {/* Watch Now Button */}
                         <button
-                            onClick={() => fetchStreamingUrl(
-                                selectedItem.title,
-                                selectedItem.imdbID
-                            )}
+                            onClick={() => fetchStreamingUrl(selectedItem)}
                             disabled={streamLoading}
                             className={`mt-4 px-6 py-3 rounded-lg text-white font-semibold flex items-center justify-center gap-2 transition ${
                                 streamLoading
@@ -999,19 +1046,73 @@ export default function MovieSearchPage() {
                           <p><strong>Production:</strong> {selectedItem.production_companies.join(', ')}</p>
                         </div>
 
-                        {/* Watch Now Button */}
-                        <button
-                            onClick={() => fetchStreamingUrl(selectedItem.title)}
-                            disabled={streamLoading}
-                            className={`mt-4 px-6 py-3 rounded-lg text-white font-semibold flex items-center justify-center gap-2 transition ${
-                                streamLoading
-                                    ? "bg-gray-500 cursor-not-allowed"
-                                    : "bg-gradient-to-r from-green-500 to-emerald-600 hover:scale-105"
-                            }`}
-                        >
-                          <FaPlay />
-                          {streamLoading ? "Loading Stream..." : "Watch Now"}
-                        </button>
+                        {/* Season/Episode Selector */}
+                        <div className="mt-4">
+                          <h3 className="text-xl font-bold mb-2">Select Episode</h3>
+                          <div className="flex flex-wrap gap-4">
+                            <div>
+                              <label className="block text-gray-400 mb-2">Season</label>
+                              <select
+                                  value={selectedSeason}
+                                  onChange={(e) => setSelectedSeason(parseInt(e.target.value))}
+                                  className="px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white"
+                              >
+                                {selectedItem.seasonsData
+                                    .filter((s: any) => s.season_number > 0)
+                                    .map((season: any) => (
+                                        <option key={season.id} value={season.season_number}>
+                                          Season {season.season_number}
+                                        </option>
+                                    ))}
+                              </select>
+                            </div>
+
+                            <div>
+                              <label className="block text-gray-400 mb-2">Episode</label>
+                              <select
+                                  value={selectedEpisode}
+                                  onChange={(e) => setSelectedEpisode(parseInt(e.target.value))}
+                                  className="px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white"
+                              >
+                                {episodes.map(ep => (
+                                    <option key={ep.number} value={ep.number}>
+                                      Episode {ep.number}
+                                    </option>
+                                ))}
+                              </select>
+                            </div>
+                          </div>
+
+                          {/* Watch Now Button */}
+                          <button
+                              onClick={() => fetchStreamingUrl(selectedItem)}
+                              disabled={streamLoading}
+                              className={`mt-4 px-6 py-3 rounded-lg text-white font-semibold flex items-center justify-center gap-2 transition ${
+                                  streamLoading
+                                      ? "bg-gray-500 cursor-not-allowed"
+                                      : "bg-gradient-to-r from-green-500 to-emerald-600 hover:scale-105"
+                              }`}
+                          >
+                            <FaPlay />
+                            {streamLoading ? "Loading Stream..." : "Watch Episode"}
+                          </button>
+
+                          {/* Quick episode links */}
+                          <div className="mt-4">
+                            <h4 className="text-lg font-semibold mb-2">Quick Links:</h4>
+                            <div className="flex flex-wrap gap-2">
+                              {episodes.slice(0, 5).map(ep => (
+                                  <button
+                                      key={ep.number}
+                                      onClick={() => fetchStreamingUrl(selectedItem, selectedSeason, ep.number)}
+                                      className="px-3 py-1 bg-gray-700 hover:bg-gray-600 rounded text-sm"
+                                  >
+                                    Ep {ep.number}
+                                  </button>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
 
                         {/* Videos */}
                         {selectedItem.videos.length > 0 && (

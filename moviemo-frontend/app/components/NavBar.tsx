@@ -176,10 +176,8 @@ export default function Navbar() {
             </span>
             </Link>
 
-            <div
-                className="hidden md:flex flex-1 max-w-lg mx-8 relative"
-                ref={searchRef}
-            >
+            {/* Desktop Navigation */}
+            <div className="hidden md:flex flex-1 max-w-lg mx-8 relative" ref={searchRef}>
               {/* Desktop Search Bar */}
               <div className="relative w-full">
                 <input
@@ -210,7 +208,6 @@ export default function Navbar() {
                   )}
                 </div>
               </div>
-
               {/* Search Results Dropdown */}
               {showSearchResults && (
                   <div className="absolute top-full left-0 right-0 mt-2 bg-white/5 backdrop-blur-lg rounded-xl shadow-2xl border border-white/10 z-[60] max-h-96 overflow-y-auto animate-fadeIn">
@@ -277,7 +274,17 @@ export default function Navbar() {
               )}
             </div>
 
+            {/* Desktop Navigation Links */}
             <div className="hidden md:flex items-center space-x-6 lg:space-x-8">
+              {/* TV Shows Link - New */}
+              <Link
+                  href="/tv-shows"
+                  className="relative px-3 py-2 text-white/80 hover:text-white transition-all duration-300 group"
+              >
+                <span className="relative z-10">TV Shows</span>
+                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-purple-500 to-pink-500 group-hover:w-full transition-all duration-500"></span>
+              </Link>
+
               {/* IMDB Link */}
               <Link
                   href="/IMDB"
@@ -328,7 +335,6 @@ export default function Navbar() {
                         />
                       </svg>
                     </button>
-
                     {isDropdownOpen && currentUserId !== null && (
                         <div className="absolute right-0 mt-2 w-56 bg-white/5 backdrop-blur-lg rounded-xl shadow-2xl border border-white/10 z-[70] overflow-hidden animate-scaleIn">
                           <div className="p-2">
@@ -387,6 +393,7 @@ export default function Navbar() {
               )}
             </div>
 
+            {/* Mobile Navigation Toggle */}
             <div className="flex md:hidden items-center space-x-2">
               <button
                   onClick={() => setShowMobileSearch(!showMobileSearch)}
@@ -533,6 +540,15 @@ export default function Navbar() {
           {isMobileMenuOpen && (
               <div className="md:hidden mt-4 pb-4 border-t border-white/10">
                 <div className="flex flex-col space-y-4 pt-4">
+                  {/* TV Shows Link - New */}
+                  <Link
+                      href="/tv-shows"
+                      className="text-white/80 hover:text-white transition-colors duration-200 px-2 py-2"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    TV Shows
+                  </Link>
+
                   {/* IMDB Link for Mobile */}
                   <Link
                       href="/IMDB"
@@ -541,7 +557,7 @@ export default function Navbar() {
                       className="text-white/80 hover:text-white transition-colors duration-200 px-2 py-2"
                       onClick={() => setIsMobileMenuOpen(false)}
                   >
-                    IMDB
+                    Explore
                   </Link>
 
                   {isLoggedIn && isAdmin && (
@@ -610,21 +626,21 @@ export default function Navbar() {
         </div>
 
         <style jsx>{`
-        @keyframes fadeIn {
-          from { opacity: 0; transform: translateY(-10px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes scaleIn {
-          from { opacity: 0; transform: scale(0.95); }
-          to { opacity: 1; transform: scale(1); }
-        }
-        .animate-fadeIn {
-          animation: fadeIn 0.3s ease-out forwards;
-        }
-        .animate-scaleIn {
-          animation: scaleIn 0.2s ease-out forwards;
-        }
-      `}</style>
+          @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+          }
+          @keyframes scaleIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+          }
+          .animate-fadeIn {
+            animation: fadeIn 0.3s ease-out forwards;
+          }
+          .animate-scaleIn {
+            animation: scaleIn 0.2s ease-out forwards;
+          }
+        `}</style>
       </nav>
   );
 }
