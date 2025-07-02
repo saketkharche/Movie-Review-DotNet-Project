@@ -343,23 +343,24 @@ export default function TVShows() {
     // TV Show Details Modal
     const ShowDetails = () => (
         <div className="fixed inset-0 bg-black/90 z-40 overflow-y-auto">
-            <div className="max-w-5xl mx-auto p-6">
-                {/* Back Button */}
-                <button
-                    onClick={() => {
-                        setSelectedItem(null);
-                        setSelectedSeason(null);
-                        setManualEpisode(null);
-                        setStreamUrl("");
-                        setStreamTitle("");
-                    }}
-                    className="mb-6 flex items-center text-gray-300 hover:text-white transition-colors duration-300 text-sm bg-gray-800 px-4 py-2 rounded-full shadow-md"
-                    aria-label="Back to results"
-                >
-                    <FaArrowLeft className="mr-2" />
-                    Back to Results
-                </button>
+            {/* Fixed Back Button at top left */}
+            <button
+                onClick={() => {
+                    setSelectedItem(null);
+                    setSelectedSeason(null);
+                    setManualEpisode(null);
+                    setStreamUrl("");
+                    setStreamTitle("");
+                }}
+                className="fixed top-4 left-4 z-50 flex items-center text-gray-300 hover:text-white transition-colors duration-300 text-sm bg-gray-800/90 backdrop-blur-sm px-4 py-2 rounded-full shadow-lg border border-gray-700"
+                aria-label="Back to results"
+            >
+                <FaArrowLeft className="mr-2" />
+                Back to Results
+            </button>
 
+            {/* Content container with adjusted top padding */}
+            <div className="max-w-5xl mx-auto p-6 pt-20">
                 {/* TV Show Details Card */}
                 <div className="bg-gradient-to-br from-gray-800 via-gray-900 to-black p-6 rounded-xl shadow-2xl border border-gray-700">
                     <div className="flex flex-col lg:flex-row gap-6">
