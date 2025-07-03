@@ -15,11 +15,11 @@ namespace Moviemo.Controllers
 
         public MoviesController(IMovieService MovieService)
         {
-            // Yapıcı metot içerisinde bağımlılık enjeksiyonu
+            
             _MovieService = MovieService;
         }
 
-        // api/movies -> Tüm film bilgilerini al
+        // api/movies 
         [HttpGet]
         public async Task<IActionResult> GetAllMovies([FromQuery] int? PageIndex, [FromQuery] int? PageSize)
         {
@@ -43,7 +43,7 @@ namespace Moviemo.Controllers
             return Ok(Movies);
         }
 
-        // api/movies/{Id} -> Rotada belirtilen ID'ye sahip film bilgisini al
+        // api/movies/{Id} 
         [HttpGet("{Id}")]
         public async Task<IActionResult> GetMovieById(long Id)
         {
@@ -54,7 +54,7 @@ namespace Moviemo.Controllers
             return Ok(Movie);
         }
 
-        // api/movies -> Film oluştur
+        // api/movies 
         [Authorize(Roles = "Admin,Manager")]
         [HttpPost]
         public async Task<IActionResult> CreateMovie(MovieCreateDto Dto)
@@ -67,7 +67,7 @@ namespace Moviemo.Controllers
             return Ok(Movie);
         }
 
-        // api/movies/{Id} -> Rotada belirtilen ID'ye sahip filmi güncelle
+        // api/movies/{Id} 
         [Authorize(Roles = "Admin,Manager")]
         [HttpPut("{Id}")]
         public async Task<IActionResult> UpdateMovie(long Id, MovieUpdateDto Dto)
@@ -87,7 +87,7 @@ namespace Moviemo.Controllers
             };
         }
 
-        // api/movies/{Id} -> Rotada belirtilen ID'ye sahip filmi sil
+        // api/movies/{Id} 
         [Authorize(Roles = "Admin,Manager")]
         [HttpDelete("{Id}")]
         public async Task<IActionResult> DeleteMovie(long Id)

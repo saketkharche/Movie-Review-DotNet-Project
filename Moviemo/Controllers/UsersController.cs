@@ -17,11 +17,10 @@ namespace Moviemo.Controllers
 
         public UsersController(IUserService UserService)
         {
-            // Yapıcı metot içinde bağımlılık enjeksiyonu
             _UserService = UserService;
         }
 
-        // api/users -> Tüm kullanıcı bilgilerini al
+        // api/users 
         [HttpGet]
         public async Task<IActionResult> GetAllUsers([FromQuery] string? Username)
         {
@@ -45,7 +44,7 @@ namespace Moviemo.Controllers
             return Ok(Users);
         }
 
-        // api/users/{Id} -> Rotada belirtilen ID'ye sahip kullanıcı bilgilerini al
+        // api/users/{Id} 
         [HttpGet("{Id}")]
         public async Task<IActionResult> GetUserById(long Id)
         {
@@ -56,7 +55,7 @@ namespace Moviemo.Controllers
             return Ok(User);
         }
 
-        // api/users -> Kullanıcı oluştur
+        // api/users 
         [HttpPost]
         public async Task<IActionResult> CreateUser([FromBody] UserCreateDto Dto)
         {
@@ -75,7 +74,7 @@ namespace Moviemo.Controllers
             };
         }
 
-        // api/users/{Id} -> Rotada belirtilen ID'ye sahip kullanıcıyı güncelle
+        // api/users/{Id} 
         [Authorize]
         [HttpPut("{Id}")]
         public async Task<IActionResult> UpdateUser(long Id, [FromBody] UserUpdateDto Dto)
@@ -100,7 +99,7 @@ namespace Moviemo.Controllers
             };
         }
 
-        // api/users/{Id} -> Rotada belirtilen ID'ye sahip kullanıcıyı sil
+        // api/users/{Id} 
         [Authorize]
         [HttpDelete("{Id}")]
         public async Task<IActionResult> DeleteUser(long Id)
@@ -123,7 +122,7 @@ namespace Moviemo.Controllers
             };
         }
 
-        // api/users/login -> Kullanıcı hesabına giriş yap
+        // api/users/login 
         [HttpPost("login")]
         public async Task<IActionResult> LoginUser([FromBody] UserLoginDto Dto)
         {
@@ -143,7 +142,7 @@ namespace Moviemo.Controllers
             };
         }
 
-        // api/users/refresh-token -> Kullanıcının access ve refresh tokenlerini yenile
+        // api/users/refresh-token 
         [HttpPost("refresh-token")]
         public async Task<IActionResult> RefreshTokens([FromBody] RefreshTokenRequestDto Dto)
         {

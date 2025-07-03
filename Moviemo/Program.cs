@@ -11,10 +11,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// Controllerlar eklendi
 builder.Services.AddControllers();
 
-// Servisler
+
 builder.Services.AddScoped<ICommentService, CommentService>();
 builder.Services.AddScoped<IMovieService, MovieService>();
 builder.Services.AddScoped<IReportService, ReportService>();
@@ -43,7 +42,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowFrontend",
         policy =>
         {
-            policy.WithOrigins("http://localhost:3000") // frontend portun
+            policy.WithOrigins("http://localhost:3000") // frontend 
                   .AllowAnyHeader()
                   .AllowAnyMethod();
         });

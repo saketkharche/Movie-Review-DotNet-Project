@@ -18,7 +18,7 @@ namespace Moviemo.Controllers
             _ReportService = ReportService;
         }
 
-        // api/reports -> Tüm rapor bilgilerini al
+        // api/reports 
         [Authorize(Roles = "Manager")]
         [HttpGet]
         public async Task<IActionResult> GetAllReports()
@@ -31,7 +31,7 @@ namespace Moviemo.Controllers
             return Ok(Reports);
         }
 
-        // api/reports/{Id} -> Rotada belirtilen ID'ye sahip rapor bilgisini al
+        // api/reports/{Id} 
         [Authorize(Roles = "Manager")]
         [HttpGet("{Id}")]
         public async Task<IActionResult> GetReportById(long Id)
@@ -44,7 +44,7 @@ namespace Moviemo.Controllers
             return Ok(Report);
         }
 
-        // api/reports -> Rapor oluştur
+        // api/reports 
         [Authorize(Roles = "Admin,Manager")]
         [HttpPost]
         public async Task<IActionResult> CreateReport([FromBody] ReportCreateDto Dto)
@@ -60,7 +60,7 @@ namespace Moviemo.Controllers
             return Ok(Dto);
         }
 
-        // api/reports/{Id} -> Rotada belirtilen ID'ye sahip raporu güncelle
+        // api/reports/{Id} 
         [Authorize(Roles = "Manager")]
         [HttpPut("{Id}")]
         public async Task<IActionResult> UpdateReport(long Id, ReportUpdateDto Dto)
@@ -83,7 +83,7 @@ namespace Moviemo.Controllers
             };
         }
 
-        // api/reports/{Id} -> Rotada belirtilen ID'ye sahip raporu sil}
+        // api/reports/{Id} 
         [Authorize(Roles = "Manager")]
         [HttpDelete("{Id}")]
         public async Task<IActionResult> DeleteReport(long Id)

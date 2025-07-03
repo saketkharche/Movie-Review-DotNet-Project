@@ -15,11 +15,10 @@ namespace Moviemo.Controllers
 
         public CommentsController(ICommentService CommentService)
         {
-            // Yapıcı metot bağımlılık enjeksiyonu
             _CommentService = CommentService;
         }
 
-        // api/comments -> Tüm yorum bilgilerini al
+        // api/comments 
         [HttpGet]
         public async  Task<IActionResult> GetAllComments([FromQuery] long? MovieId)
         {
@@ -39,7 +38,7 @@ namespace Moviemo.Controllers
             return Ok(Comments);
         }
 
-        // api/comments/{Id} -> Rotada belirtilen ID'ye sahip yorum bilgilerini al
+        // api/comments/{Id} ->
         [HttpGet("{Id}")]
         public async Task<IActionResult> GetCommentById(long Id)
         {
@@ -50,13 +49,13 @@ namespace Moviemo.Controllers
             return Ok(Comment);
         }
 
-        // api/comments -> Yorum oluştur
+        // api/comments -> 
         [Authorize]
         [HttpPost]
         public async Task<IActionResult> CreateComment([FromBody] CommentCreateDto Dto)
         {
             if (!long.TryParse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value, out var UserId))
-                return Unauthorized("Geçersiz kullanıcı token bilgisi.");
+                return Unauthorized("Invalid user token information.");
 
             var Comment = await _CommentService.CreateAsync(Dto, UserId);
 
@@ -65,7 +64,7 @@ namespace Moviemo.Controllers
             return Ok(Comment);
         }
 
-        // api/comments/{Id} -> Rotada belirtilen ID'ye sahip yorumu güncelle
+        // api/comments/{Id} -> 
         [Authorize]
         [HttpPut("{Id}")]
         public async Task<IActionResult> UpdateComment(long Id, [FromBody] CommentUpdateDto Dto)
@@ -89,7 +88,7 @@ namespace Moviemo.Controllers
             };
         }
 
-        // api/comments/{Id} -> Rotada belirtilen ID'ye sahip yorumu sil
+        // api/comments/{Id} -> 
         [Authorize]
         [HttpDelete("{Id}")]
         public async Task<IActionResult> DeleteComment(long Id)

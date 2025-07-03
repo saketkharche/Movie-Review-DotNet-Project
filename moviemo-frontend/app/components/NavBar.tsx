@@ -358,6 +358,27 @@ export default function Navbar() {
                               </svg>
                               <span>Profile</span>
                             </Link>
+                            <Link
+                                href="/feedback"
+                                className="flex items-center space-x-3 px-4 py-3 text-white/90 hover:text-green-400 hover:bg-green-500/10 rounded-lg transition-all duration-200 transform hover:translate-x-1"
+                                onClick={() => setIsDropdownOpen(false)}
+                            >
+                              <svg
+                                  className="w-5 h-5 text-green-400"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  viewBox="0 0 24 24"
+                              >
+                                <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M7 8h10M7 12h8m-4 8l-4-4H5a2 2 0 01-2-2V7a2 2 0 012-2h14a2 2 0 012 2v7a2 2 0 01-2 2h-3l-4 4z"
+                                />
+                              </svg>
+                              <span>Feedback</span>
+                            </Link>
+
                             <div className="h-px bg-white/10 my-2"></div>
                             <Link
                                 href="/login"

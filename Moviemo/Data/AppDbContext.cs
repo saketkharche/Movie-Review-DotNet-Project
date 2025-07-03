@@ -15,6 +15,8 @@ namespace Moviemo.Data
         public DbSet<Models.Comment> Comments { get; set; }
         public DbSet<Models.Report> Reports { get; set; }
         public DbSet<Models.Vote> Votes { get; set; }
+        
+        public DbSet<Models.Feedback> Feedbacks { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

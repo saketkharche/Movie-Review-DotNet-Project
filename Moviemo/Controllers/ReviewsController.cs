@@ -15,11 +15,10 @@ namespace Moviemo.Controllers
 
         public ReviewsController(IReviewService ReviewService)
         {
-            // Yapıcı metot bağımlılık enjeksiyonu
             _ReviewService = ReviewService;
         }
 
-        // api/reviews -> Tüm inceleme bilgilerini al
+        // api/reviews -> 
         [HttpGet]
         public async Task<IActionResult> GetAllReviews([FromQuery] long? MovieId)
         {
@@ -41,7 +40,7 @@ namespace Moviemo.Controllers
             return Ok(Reviews);
         }
 
-        // api/reviews/{Id} -> Rotada belirtilen ID'ye sahip inceleme bilgilerini al
+        // api/reviews/{Id} ->
         [HttpGet("{Id}")]
         public async Task<IActionResult> GetReviewById(long Id)
         {
@@ -52,7 +51,7 @@ namespace Moviemo.Controllers
             return Ok(Review);
         }
 
-        // api/reviews -> İnceleme oluştur
+        // api/reviews -> 
         [HttpPost]
         [Authorize]
         public async Task<IActionResult> CreateReview([FromBody] ReviewCreateDto Dto)
@@ -68,7 +67,7 @@ namespace Moviemo.Controllers
             return Ok(ResponseDto);
         }
 
-        // api/reviews/{Id} -> Rotada belirtilen ID'ye sahip incelemeyi güncelle
+        // api/reviews/{Id} ->
         [Authorize]
         [HttpPut("{Id}")]
         public async Task<IActionResult> UpdateReview(long Id, [FromBody] ReviewUpdateDto Dto)
@@ -91,7 +90,7 @@ namespace Moviemo.Controllers
             };
         }
 
-        // api/reviews/{Id} -> Rotada belirtilen ID'ye sahip incelemeyi sil
+        // api/reviews/{Id} -> 
         [Authorize]
         [HttpDelete("{Id}")]
         public async Task<IActionResult> DeleteReview(long Id)

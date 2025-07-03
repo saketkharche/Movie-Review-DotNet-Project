@@ -146,8 +146,7 @@ namespace Moviemo.Services
                     var DtoProperties = Dto.GetType().GetProperties();
                 var CommentType = Comment.GetType();
 
-                /* CommentUpdateDto'nun tek propertysi var ancak uygulamanın 
-                 * scalable olması için böyle bıraktım */
+                // CommentUpdateDto'
                 foreach (var Property in DtoProperties)
                 {
                     var NewValue = Property.GetValue(Dto);

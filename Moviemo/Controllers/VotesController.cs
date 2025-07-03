@@ -18,7 +18,7 @@ namespace Moviemo.Controllers
             _VoteService = VoteService;
         }
 
-        // api/votes -> Tüm oy bilgilerini al
+        // api/votes 
         [HttpGet]
         public async Task<IActionResult> GetAllVotes([FromQuery] long? UserId, [FromQuery] long? CommentId)
         {
@@ -40,7 +40,7 @@ namespace Moviemo.Controllers
             return Ok(Votes);
         }
 
-        // api/votes/{Id} -> Rotada belirtilen ID'ye sahip oy bilgisini al
+        // api/votes/{Id} 
         [HttpGet("{Id}")]
         public async Task<IActionResult> GetVoteById(long Id)
         {
@@ -51,7 +51,7 @@ namespace Moviemo.Controllers
             return Ok(Vote);
         }
 
-        // api/votes -> Oy oluştur
+        // api/votes 
         [Authorize]
         [HttpPost]
         public async Task<IActionResult> CreateVote([FromBody] VoteCreateDto Dto)
@@ -74,7 +74,7 @@ namespace Moviemo.Controllers
             };
         }
 
-        // api/votes/{Id} -> Rotada belirtilen ID'ye sahip oy bilgisini güncelle
+        // api/votes/{Id} -> 
         [Authorize]
         [HttpPut("{Id}")]
         public async Task<IActionResult> UpdateVote(long Id, VoteUpdateDto Dto)
@@ -97,7 +97,7 @@ namespace Moviemo.Controllers
             };
         }
 
-        // api/votes/{Id} -> Rotada belirtilen ID'ye sahip oyu sil}
+        // api/votes/{Id} -> 
         [Authorize]
         [HttpDelete("{Id}")]
         public async Task<IActionResult> DeleteVote(long Id)

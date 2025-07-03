@@ -25,7 +25,7 @@ const AdminPanel: React.FC = () => {
   const moviesApiUrl = "https://localhost:7179/api/movies";
   const usersApiUrl = "https://localhost:7179/api/users";
   const reportsApiUrl = "https://localhost:7179/api/reports";
-
+  const feedbackApiUrl = "https://localhost:7179/api/FeedbackApi";
   // Movie states
   const [addMovieFormData, setAddMovieFormData] = useState<MovieCreateDto>({
     title: "",
@@ -71,6 +71,10 @@ const AdminPanel: React.FC = () => {
     1: "Admin",
     2: "Manager",
   };
+
+  // Feedback States - UPDATED
+  const [feedbacks, setFeedbacks] = useState<any[]>([]);
+  const [feedbackLoading, setFeedbackLoading] = useState<boolean>(false);
 
   useEffect(() => {
     const getAndSetUserRole = async () => {
@@ -150,7 +154,9 @@ const AdminPanel: React.FC = () => {
       setMovieSearchQuery("");
       setMovieSearchResults([]);
     }
-
+    if (section !== "feedback") {
+      setFeedbacks([]);
+    }
     if (section !== "edit-movie") {
       setEditMovieSearchQuery("");
       setEditMovieSearchResults([]);
@@ -176,6 +182,12 @@ const AdminPanel: React.FC = () => {
     }
   };
 
+  useEffect(() => {
+    if (activeSection === "feedback" && (userRole === "1" || userRole === "2")) {
+      fetchFeedbacks();
+    }
+  }, [activeSection, userRole]);
+
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
   };
@@ -187,6 +199,78 @@ const AdminPanel: React.FC = () => {
       ...prev,
       [e.target.name]: e.target.value,
     }));
+  };
+
+  // UPDATED: Simplified feedback fetching
+  const fetchFeedbacks = async () => {
+    setFeedbackLoading(true);
+    try {
+      const response = await fetch(feedbackApiUrl, {
+        method: "GET",
+        headers: apiService.getHeaders(true),
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setFeedbacks(data);
+      } else {
+        throw new Error("Failed to fetch feedback");
+      }
+    } catch (error) {
+      console.error("Error fetching feedback:", error);
+      MySwal.fire({
+        icon: "error",
+        title: "Error",
+        text: "Failed to load feedback!",
+        background: "#1f2937",
+        color: "#fff",
+        confirmButtonColor: "#6366f1",
+      });
+    } finally {
+      setFeedbackLoading(false);
+    }
+  };
+
+  // UPDATED: Remove page parameter
+  const deleteFeedback = async (id: number) => {
+    const result = await MySwal.fire({
+      icon: "warning",
+      title: "Delete Feedback",
+      text: "Are you sure you want to delete this feedback?",
+      showCancelButton: true,
+      confirmButtonColor: "#ef4444",
+      cancelButtonColor: "#6b7280",
+      background: "#1f2937",
+      color: "#fff",
+    });
+    if (result.isConfirmed) {
+      try {
+        const response = await fetch(`${feedbackApiUrl}/${id}`, {
+          method: "DELETE",
+          headers: apiService.getHeaders(true),
+        });
+        if (response.ok) {
+          fetchFeedbacks(); // Refresh without page parameter
+          MySwal.fire({
+            icon: "success",
+            title: "Deleted!",
+            text: "Feedback deleted successfully.",
+            background: "#1f2937",
+            color: "#fff",
+            confirmButtonColor: "#6366f1",
+          });
+        }
+      } catch (error) {
+        console.error("Error deleting feedback:", error);
+        MySwal.fire({
+          icon: "error",
+          title: "Error",
+          text: "Failed to delete feedback!",
+          background: "#1f2937",
+          color: "#fff",
+          confirmButtonColor: "#6366f1",
+        });
+      }
+    }
   };
 
   const handleAddMovie = async () => {
@@ -788,6 +872,7 @@ const AdminPanel: React.FC = () => {
                       { id: "reports", icon: "📊", label: "Reports" },
                     ]
                     : []),
+                ...(userRole === "1" || userRole === "2" ? [{ id: "feedback", icon: "💬", label: "User Feedback" }] : []),
                 ...(userRole === "1"
                     ? [
                       { id: "roles", icon: "🔑", label: "Change Role" },
@@ -890,6 +975,53 @@ const AdminPanel: React.FC = () => {
                             </p>
                           </div>
                       ))}
+                    </div>
+                  </div>
+              )}
+
+              {/* UPDATED FEEDBACK SECTION */}
+              {activeSection === "feedback" && (userRole === "1" || userRole === "2") && (
+                  <div className="content-section">
+                    <div className="mb-4 sm:mb-6 p-6 sm:p-8 lg:p-10 bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl shadow-2xl">
+                      <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold bg-gradient-to-br from-purple-500 to-pink-500 bg-clip-text text-transparent mb-2">
+                        User Feedback
+                      </h1>
+                      <p className="text-sm sm:text-base text-white/80">
+                        View and manage user feedback submissions
+                      </p>
+                    </div>
+                    <div className="p-6 sm:p-8 lg:p-10 bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl shadow-2xl max-w-4xl mx-auto">
+                      {feedbackLoading ? (
+                          <div className="text-center py-8">
+                            <div className="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-purple-500"></div>
+                            <p className="mt-2 text-white/80">Loading feedback...</p>
+                          </div>
+                      ) : feedbacks.length > 0 ? (
+                          <div className="space-y-3 mb-6">
+                            {feedbacks.map((feedback) => (
+                                <div key={feedback.id} className="p-4 bg-white/5 border border-white/10 rounded-lg hover:bg-white/10 transition-colors">
+                                  <div className="flex justify-between items-start">
+                                    <div>
+                                      <h4 className="font-semibold text-white">{feedback.name}</h4>
+                                      <p className="text-sm text-purple-300">{feedback.email}</p>
+                                      <p className="mt-2 text-white/90">{feedback.message}</p>
+                                      <p className="text-xs text-white/60 mt-2">
+                                        {new Date(feedback.submittedAt).toLocaleString()}
+                                      </p>
+                                    </div>
+                                    <button
+                                        onClick={() => deleteFeedback(feedback.id)}
+                                        className="text-red-400 hover:text-red-300 p-2 rounded-lg hover:bg-red-500/20"
+                                    >
+                                      🗑️
+                                    </button>
+                                  </div>
+                                </div>
+                            ))}
+                          </div>
+                      ) : (
+                          <div className="text-center text-white/70 py-6 sm:py-8">No feedback found.</div>
+                      )}
                     </div>
                   </div>
               )}
