@@ -92,18 +92,14 @@ export default function TVShows() {
         if ((pageNum === 1 && !reset) || pageNum === 1 && filters.searchTerm) setLoading(true);
         else setLoadingMore(true);
         setError("");
-
         try {
             let url = `${TMDB_API_URL}/discover/tv?include_adult=false&sort_by=${filters.sort}&page=${pageNum}`;
             if (filters.year) url += `&first_air_date_year=${filters.year}`;
             if (filters.rating) url += `&vote_average.gte=${filters.rating}`;
             if (filters.genre) url += `&with_genres=${filters.genre}`;
-
-            // Handle search
             if (filters.searchTerm) {
                 url = `${TMDB_API_URL}/search/tv?query=${encodeURIComponent(filters.searchTerm)}&page=${pageNum}`;
             }
-
             const res = await fetch(url, {
                 headers: {
                     Authorization: `Bearer ${TMDB_READ_TOKEN}`,
@@ -111,7 +107,6 @@ export default function TVShows() {
                 },
             });
             const data = await res.json();
-
             if (data.results) {
                 setTVShows((prev) =>
                     pageNum === 1 ? [...data.results] : [...prev, ...data.results]
@@ -130,47 +125,29 @@ export default function TVShows() {
     // Handle search input changes with debounce
     const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
-
-        // Clear previous timeout
-        if (searchTimeoutRef.current) {
-            clearTimeout(searchTimeoutRef.current);
-        }
-
-        // Set new timeout
+        if (searchTimeoutRef.current) clearTimeout(searchTimeoutRef.current);
         searchTimeoutRef.current = setTimeout(() => {
-            setFilters(prev => ({...prev, searchTerm: value}));
-            // Reset to first page when search changes
-            if (value !== filters.searchTerm) {
-                setPage(1);
-            }
-        }, 500); // 500ms delay
+            setFilters(prev => ({ ...prev, searchTerm: value }));
+            if (value !== filters.searchTerm) setPage(1);
+        }, 500);
     };
 
     useEffect(() => {
         fetchTVShows(1, true);
-
-        // Cleanup timeout on unmount
         return () => {
-            if (searchTimeoutRef.current) {
-                clearTimeout(searchTimeoutRef.current);
-            }
+            if (searchTimeoutRef.current) clearTimeout(searchTimeoutRef.current);
         };
     }, [filters]);
 
     // Infinite scroll
     useEffect(() => {
         if (loading || !hasMore || filters.searchTerm) return;
-
         observer.current = new IntersectionObserver(entries => {
-            if (entries[0].isIntersecting) {
-                setPage(prev => prev + 1);
-            }
+            if (entries[0].isIntersecting) setPage(prev => prev + 1);
         }, { threshold: 0.5 });
-
         if (lastTVShowElementRef.current) {
             observer.current.observe(lastTVShowElementRef.current);
         }
-
         return () => {
             if (observer.current) observer.current.disconnect();
         };
@@ -183,24 +160,17 @@ export default function TVShows() {
     // Get TV show details
     const getTVShowDetails = async (item: any) => {
         try {
-            const detailsRes = await fetch(
-                `${TMDB_API_URL}/tv/${item.id}?append_to_response=seasons,videos,similar`, {
-                    headers: {
-                        Authorization: `Bearer ${TMDB_READ_TOKEN}`,
-                        accept: "application/json",
-                    },
-                }
-            );
+            const detailsRes = await fetch(`${TMDB_API_URL}/tv/${item.id}?append_to_response=seasons,videos,similar`, {
+                headers: {
+                    Authorization: `Bearer ${TMDB_READ_TOKEN}`,
+                    accept: "application/json",
+                },
+            });
             const detailsData = await detailsRes.json();
 
-            // Get IMDb ID from TMDB first
             let currentImdbID = detailsData.imdb_id;
-
-            // If not available, fallback to OMDB
             if (!currentImdbID) {
-                const omdbRes = await fetch(
-                    `${OMDB_API_URL}&t=${encodeURIComponent(item.name)}`
-                );
+                const omdbRes = await fetch(`${OMDB_API_URL}&t=${encodeURIComponent(item.name)}`);
                 const omdbData = await omdbRes.json();
                 currentImdbID = omdbData.imdbID || null;
             }
@@ -218,32 +188,21 @@ export default function TVShows() {
     };
 
     // Handle streaming URL
-    const fetchStreamingUrl = async (
-        item: any,
-        seasonNumber: number,
-        episodeNumber: number
-    ) => {
+    const fetchStreamingUrl = async (item: any, seasonNumber: number, episodeNumber: number) => {
         if (!seasonNumber || !episodeNumber) {
             alert("Please select a season and enter an episode number");
             return;
         }
         setStreamLoading(true);
         try {
-            const seasonData = item.seasons.find(
-                (s: any) => s.season_number === seasonNumber
-            );
-
-            // Validate episode number
+            const seasonData = item.seasons.find((s: any) => s.season_number === seasonNumber);
             if (seasonData && episodeNumber > seasonData.episode_count) {
                 alert(`Episode must be between 1 and ${seasonData.episode_count}`);
                 return;
             }
-
-            // Construct URL
             const watchUrl = imdbID
                 ? `https://111movies.com/tv/${imdbID}/${seasonNumber}/${episodeNumber}`
                 : `https://111movies.com/tv/${item.id}/${seasonNumber}/${episodeNumber}`;
-
             setStreamTitle(`${item.name} S${seasonNumber.toString().padStart(2, '0')}E${episodeNumber.toString().padStart(2, '0')}`);
             setStreamUrl(watchUrl);
             setShowPlayer(true);
@@ -263,12 +222,7 @@ export default function TVShows() {
         return (
             <div className="flex items-center mt-1">
                 {[...Array(5)].map((_, i) => (
-                    <FaStar
-                        key={i}
-                        className={`text-xs ${
-                            i < starCount ? "text-yellow-400" : "text-gray-700"
-                        }`}
-                    />
+                    <FaStar key={i} className={`text-xs ${i < starCount ? "text-yellow-400" : "text-gray-700"}`} />
                 ))}
                 <span className="ml-1 text-gray-400 text-xs">{rating}</span>
             </div>
@@ -311,7 +265,6 @@ export default function TVShows() {
                         &times;
                     </button>
                 </div>
-
                 {/* Video Player */}
                 <div className="relative pb-[56.25%] h-0 rounded-lg overflow-hidden bg-gray-800">
                     {streamUrl ? (
@@ -328,7 +281,6 @@ export default function TVShows() {
                         </div>
                     )}
                 </div>
-
                 {/* Disclaimer */}
                 <div className="p-4 mt-4 text-sm text-gray-400 bg-gray-800 rounded-lg">
                     <p>Streaming via MovieMo • Content provided by third-party services</p>
@@ -340,148 +292,164 @@ export default function TVShows() {
         </div>
     );
 
-    // TV Show Details Modal
-    const ShowDetails = () => (
-        <div className="fixed inset-0 bg-black/90 z-40 overflow-y-auto">
-            {/* Fixed Back Button at top left */}
-            <button
-                onClick={() => {
+    // TV Show Details Modal with Click-Outside Close
+    const ShowDetails = () => {
+        const modalRef = useRef<HTMLDivElement>(null);
+
+        useEffect(() => {
+            const handleClickOutside = (event: MouseEvent) => {
+                if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
                     setSelectedItem(null);
                     setSelectedSeason(null);
                     setManualEpisode(null);
                     setStreamUrl("");
                     setStreamTitle("");
-                }}
-                className="fixed top-4 left-4 z-50 flex items-center text-gray-300 hover:text-white transition-colors duration-300 text-sm bg-gray-800/90 backdrop-blur-sm px-4 py-2 rounded-full shadow-lg border border-gray-700"
-                aria-label="Back to results"
-            >
-                <FaArrowLeft className="mr-2" />
-                Back to Results
-            </button>
+                }
+            };
 
-            {/* Content container with adjusted top padding */}
-            <div className="max-w-5xl mx-auto p-6 pt-20">
-                {/* TV Show Details Card */}
-                <div className="bg-gradient-to-br from-gray-800 via-gray-900 to-black p-6 rounded-xl shadow-2xl border border-gray-700">
-                    <div className="flex flex-col lg:flex-row gap-6">
-                        {/* Poster */}
-                        <div className="lg:w-1/3 flex-shrink-0">
-                            {selectedItem.poster_path ? (
-                                <img
-                                    src={`https://image.tmdb.org/t/p/w500${selectedItem.poster_path}`}
-                                    alt={selectedItem.name}
-                                    className="w-full h-auto rounded-lg shadow-lg object-cover transition-transform hover:scale-[1.02]"
-                                />
-                            ) : (
-                                <div className="h-80 w-full bg-gray-700 flex items-center justify-center rounded-lg shadow-inner">
-                                    <FaTv className="text-5xl text-gray-400" />
-                                </div>
-                            )}
-                        </div>
+            document.addEventListener("click", handleClickOutside);
+            return () => {
+                document.removeEventListener("click", handleClickOutside);
+            };
+        }, []);
 
-                        {/* Info */}
-                        <div className="lg:w-2/3 space-y-4">
-                            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2">
-                                <div>
-                                    <h2 className="text-3xl font-extrabold mb-2">{selectedItem.name}</h2>
-                                    <div className="flex flex-wrap gap-2 text-sm">
-                    <span className="bg-red-500 text-xs px-3 py-1 rounded-full">
-                      {formatYear(selectedItem.first_air_date)}
-                    </span>
-                                        <span className="bg-blue-500 text-xs px-3 py-1 rounded-full">TV Show</span>
-                                        <span className="bg-purple-500 text-xs px-3 py-1 rounded-full">
-                      {selectedItem.number_of_seasons} Seasons
-                    </span>
-                                        <span className="bg-green-500 text-xs px-3 py-1 rounded-full">
-                      {selectedItem.episode_run_time[0] ? `${selectedItem.episode_run_time[0]} mins` : "N/A"}
-                    </span>
+        return (
+            <div className="fixed inset-0 bg-black/90 z-40 overflow-y-auto">
+                {/* Fixed Back Button at top left */}
+                <button
+                    onClick={() => {
+                        setSelectedItem(null);
+                        setSelectedSeason(null);
+                        setManualEpisode(null);
+                        setStreamUrl("");
+                        setStreamTitle("");
+                    }}
+                    className="fixed top-4 left-4 z-50 flex items-center text-gray-300 hover:text-white transition-colors duration-300 text-sm bg-gray-800/90 backdrop-blur-sm px-4 py-2 rounded-full shadow-lg border border-gray-700"
+                    aria-label="Back to results"
+                >
+                    <FaArrowLeft className="mr-2" />
+                    Back to Results
+                </button>
+                {/* Content container with adjusted top padding */}
+                <div className="max-w-5xl mx-auto p-6 pt-20">
+                    {/* Modal Content Container */}
+                    <div
+                        ref={modalRef}
+                        className="bg-gradient-to-br from-gray-800 via-gray-900 to-black p-6 rounded-xl shadow-2xl border border-gray-700"
+                    >
+                        <div className="flex flex-col lg:flex-row gap-6">
+                            {/* Poster */}
+                            <div className="lg:w-1/3 flex-shrink-0">
+                                {selectedItem.poster_path ? (
+                                    <img
+                                        src={`https://image.tmdb.org/t/p/w500${selectedItem.poster_path}`}
+                                        alt={selectedItem.name}
+                                        className="w-full h-auto rounded-lg shadow-lg object-cover transition-transform hover:scale-[1.02]"
+                                    />
+                                ) : (
+                                    <div className="h-80 w-full bg-gray-700 flex items-center justify-center rounded-lg shadow-inner">
+                                        <FaTv className="text-5xl text-gray-400" />
                                     </div>
-                                </div>
-                                <button className="text-red-500 hover:text-red-400 transition-colors self-start">
-                                    <FaHeart className="text-2xl" />
-                                </button>
+                                )}
                             </div>
-
-                            {/* Rating Stars */}
-                            {renderStars(selectedItem.vote_average.toFixed(1))}
-
-                            {/* Overview */}
-                            <p className="text-gray-300 text-sm leading-relaxed mt-2">
-                                {selectedItem.overview || "No description available."}
-                            </p>
-
-                            {/* Additional Info */}
-                            <div className="text-sm grid grid-cols-1 md:grid-cols-2 gap-3 text-gray-400 mt-4">
-                                <p><strong className="text-gray-200">Creator:</strong> {selectedItem.created_by?.[0]?.name || "N/A"}</p>
-                                <p><strong className="text-gray-200">Status:</strong> {selectedItem.status || "N/A"}</p>
-                                <p><strong className="text-gray-200">Network:</strong> {selectedItem.networks?.[0]?.name || "N/A"}</p>
-                                <p><strong className="text-gray-200">Genres:</strong> {selectedItem.genres.map((g: any) => g.name).join(', ') || "N/A"}</p>
-                            </div>
-
-                            {/* Watch Section */}
-                            <div className="mt-6 bg-gray-800 p-5 rounded-xl border border-gray-700">
-                                <h3 className="text-xl font-bold mb-4 flex items-center">
-                                    <FaPlay className="text-green-500 mr-2" /> Watch Series
-                                </h3>
-                                <div className="space-y-4">
-                                    {/* Season Selector */}
+                            {/* Info */}
+                            <div className="lg:w-2/3 space-y-4">
+                                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2">
                                     <div>
-                                        <label className="block text-gray-300 mb-2">Select Season:</label>
-                                        <select
-                                            onChange={(e) => {
-                                                const season = parseInt(e.target.value);
-                                                setSelectedSeason(season);
-                                                setManualEpisode(1); // reset to first episode
-                                            }}
-                                            value={selectedSeason || ""}
-                                            className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-purple-500 outline-none"
-                                        >
-                                            <option value="">-- Select Season --</option>
-                                            {selectedItem.seasons.map((season: any) => (
-                                                <option key={season.id} value={season.season_number}>
-                                                    {season.name} ({season.episode_count} episodes)
-                                                </option>
-                                            ))}
-                                        </select>
+                                        <h2 className="text-3xl font-extrabold mb-2">{selectedItem.name}</h2>
+                                        <div className="flex flex-wrap gap-2 text-sm">
+                      <span className="bg-red-500 text-xs px-3 py-1 rounded-full">
+                        {formatYear(selectedItem.first_air_date)}
+                      </span>
+                                            <span className="bg-blue-500 text-xs px-3 py-1 rounded-full">TV Show</span>
+                                            <span className="bg-purple-500 text-xs px-3 py-1 rounded-full">
+                        {selectedItem.number_of_seasons} Seasons
+                      </span>
+                                            <span className="bg-green-500 text-xs px-3 py-1 rounded-full">
+                        {selectedItem.episode_run_time[0] ? `${selectedItem.episode_run_time[0]} mins` : "N/A"}
+                      </span>
+                                        </div>
                                     </div>
-
-                                    {/* Episode Dropdown */}
-                                    {selectedSeason !== null && (
+                                    <button className="text-red-500 hover:text-red-400 transition-colors self-start">
+                                        <FaHeart className="text-2xl" />
+                                    </button>
+                                </div>
+                                {/* Rating Stars */}
+                                {renderStars(selectedItem.vote_average.toFixed(1))}
+                                {/* Overview */}
+                                <p className="text-gray-300 text-sm leading-relaxed mt-2">
+                                    {selectedItem.overview || "No description available."}
+                                </p>
+                                {/* Additional Info */}
+                                <div className="text-sm grid grid-cols-1 md:grid-cols-2 gap-3 text-gray-400 mt-4">
+                                    <p><strong className="text-gray-200">Creator:</strong> {selectedItem.created_by?.[0]?.name || "N/A"}</p>
+                                    <p><strong className="text-gray-200">Status:</strong> {selectedItem.status || "N/A"}</p>
+                                    <p><strong className="text-gray-200">Network:</strong> {selectedItem.networks?.[0]?.name || "N/A"}</p>
+                                    <p><strong className="text-gray-200">Genres:</strong> {selectedItem.genres.map((g: any) => g.name).join(', ') || "N/A"}</p>
+                                </div>
+                                {/* Watch Section */}
+                                <div className="mt-6 bg-gray-800 p-5 rounded-xl border border-gray-700">
+                                    <h3 className="text-xl font-bold mb-4 flex items-center">
+                                        <FaPlay className="text-green-500 mr-2" /> Watch Series
+                                    </h3>
+                                    <div className="space-y-4">
+                                        {/* Season Selector */}
                                         <div>
-                                            <label className="block text-gray-300 mb-2">Select Episode:</label>
+                                            <label className="block text-gray-300 mb-2">Select Season:</label>
                                             <select
-                                                onChange={(e) => setManualEpisode(parseInt(e.target.value))}
-                                                value={manualEpisode || ""}
+                                                onChange={(e) => {
+                                                    const season = parseInt(e.target.value);
+                                                    setSelectedSeason(season);
+                                                    setManualEpisode(1);
+                                                }}
+                                                value={selectedSeason || ""}
                                                 className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-purple-500 outline-none"
                                             >
-                                                <option value="">-- Select Episode --</option>
-                                                {Array.from(
-                                                    { length: selectedItem.seasons.find((s: any) => s.season_number === selectedSeason)?.episode_count || 0 },
-                                                    (_, i) => (
-                                                        <option key={i + 1} value={i + 1}>
-                                                            Episode {i + 1}
-                                                        </option>
-                                                    )
-                                                )}
+                                                <option value="">-- Select Season --</option>
+                                                {selectedItem.seasons.map((season: any) => (
+                                                    <option key={season.id} value={season.season_number}>
+                                                        {season.name} ({season.episode_count} episodes)
+                                                    </option>
+                                                ))}
                                             </select>
                                         </div>
-                                    )}
-
-                                    {/* Watch Button */}
-                                    <div className="mt-4">
-                                        <button
-                                            onClick={() =>
-                                                fetchStreamingUrl(selectedItem, selectedSeason!, manualEpisode!)
-                                            }
-                                            disabled={!selectedSeason || !manualEpisode}
-                                            className={`w-full px-6 py-3 rounded-lg text-white font-semibold transition-all ${
-                                                selectedSeason && manualEpisode
-                                                    ? "bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 shadow-lg hover:shadow-purple-500/30"
-                                                    : "bg-gray-600 cursor-not-allowed opacity-60"
-                                            }`}
-                                        >
-                                            Watch Now
-                                        </button>
+                                        {/* Episode Dropdown */}
+                                        {selectedSeason !== null && (
+                                            <div>
+                                                <label className="block text-gray-300 mb-2">Select Episode:</label>
+                                                <select
+                                                    onChange={(e) => setManualEpisode(parseInt(e.target.value))}
+                                                    value={manualEpisode || ""}
+                                                    className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-purple-500 outline-none"
+                                                >
+                                                    <option value="">-- Select Episode --</option>
+                                                    {Array.from(
+                                                        { length: selectedItem.seasons.find((s: any) => s.season_number === selectedSeason)?.episode_count || 0 },
+                                                        (_, i) => (
+                                                            <option key={i + 1} value={i + 1}>
+                                                                Episode {i + 1}
+                                                            </option>
+                                                        )
+                                                    )}
+                                                </select>
+                                            </div>
+                                        )}
+                                        {/* Watch Button */}
+                                        <div className="mt-4">
+                                            <button
+                                                onClick={() =>
+                                                    fetchStreamingUrl(selectedItem, selectedSeason!, manualEpisode!)
+                                                }
+                                                disabled={!selectedSeason || !manualEpisode}
+                                                className={`w-full px-6 py-3 rounded-lg text-white font-semibold transition-all ${
+                                                    selectedSeason && manualEpisode
+                                                        ? "bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 shadow-lg hover:shadow-purple-500/30"
+                                                        : "bg-gray-600 cursor-not-allowed opacity-60"
+                                                }`}
+                                            >
+                                                Watch Now
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -489,14 +457,13 @@ export default function TVShows() {
                     </div>
                 </div>
             </div>
-        </div>
-    );
+        );
+    };
 
     return (
         <div className="min-h-screen bg-gradient-to-b from-gray-900 to-black text-white">
             {/* Streaming Player */}
             {showPlayer && <StreamPlayer />}
-
             <main className="container mx-auto px-4 py-8">
                 {/* Header */}
                 <div className="text-center mb-10">
@@ -505,7 +472,6 @@ export default function TVShows() {
                     </h1>
                     <p className="text-gray-400 text-sm">Discover the best TV series and shows</p>
                 </div>
-
                 {/* Search Bar */}
                 <div className="mb-6">
                     <div className="relative">
@@ -521,7 +487,6 @@ export default function TVShows() {
                         </div>
                     </div>
                 </div>
-
                 {/* Trending Section */}
                 <div className="mb-10">
                     <h2 className="text-xl font-semibold mb-4 flex items-center">
@@ -564,7 +529,6 @@ export default function TVShows() {
                         ))}
                     </div>
                 </div>
-
                 {/* Filters */}
                 <div className="mb-6 bg-gray-800 p-5 rounded-xl">
                     <div className="flex justify-between items-center mb-4">
@@ -576,25 +540,16 @@ export default function TVShows() {
                             onClick={() => setShowFilters(!showFilters)}
                             className="text-gray-400 hover:text-white transition-colors flex items-center text-sm"
                         >
-                            {showFilters ? (
-                                <>
-                                    Hide <span className="hidden sm:inline ml-1">Filters</span>
-                                </>
-                            ) : (
-                                <>
-                                    Show <span className="hidden sm:inline ml-1">Filters</span>
-                                </>
-                            )}
+                            {showFilters ? <>Hide <span className="hidden sm:inline ml-1">Filters</span></> : <>Show <span className="hidden sm:inline ml-1">Filters</span></>}
                         </button>
                     </div>
-
                     {showFilters && (
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                             <div>
                                 <label className="block text-gray-300 mb-1 text-sm">Year</label>
                                 <select
                                     value={filters.year}
-                                    onChange={(e) => setFilters({...filters, year: e.target.value})}
+                                    onChange={(e) => setFilters({ ...filters, year: e.target.value })}
                                     className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white text-sm"
                                 >
                                     <option value="">All Years</option>
@@ -605,12 +560,11 @@ export default function TVShows() {
                                     ))}
                                 </select>
                             </div>
-
                             <div>
                                 <label className="block text-gray-300 mb-1 text-sm">Min Rating</label>
                                 <select
                                     value={filters.rating}
-                                    onChange={(e) => setFilters({...filters, rating: e.target.value})}
+                                    onChange={(e) => setFilters({ ...filters, rating: e.target.value })}
                                     className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white text-sm"
                                 >
                                     <option value="">All Ratings</option>
@@ -619,12 +573,11 @@ export default function TVShows() {
                                     ))}
                                 </select>
                             </div>
-
                             <div>
                                 <label className="block text-gray-300 mb-1 text-sm">Genre</label>
                                 <select
                                     value={filters.genre}
-                                    onChange={(e) => setFilters({...filters, genre: e.target.value})}
+                                    onChange={(e) => setFilters({ ...filters, genre: e.target.value })}
                                     className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white text-sm"
                                 >
                                     <option value="">All Genres</option>
@@ -633,12 +586,11 @@ export default function TVShows() {
                                     ))}
                                 </select>
                             </div>
-
                             <div>
                                 <label className="block text-gray-300 mb-1 text-sm">Sort By</label>
                                 <select
                                     value={filters.sort}
-                                    onChange={(e) => setFilters({...filters, sort: e.target.value})}
+                                    onChange={(e) => setFilters({ ...filters, sort: e.target.value })}
                                     className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white text-sm"
                                 >
                                     <option value="popularity.desc">Popularity</option>
@@ -648,7 +600,6 @@ export default function TVShows() {
                             </div>
                         </div>
                     )}
-
                     {/* Current Filters Display */}
                     {(filters.year || filters.rating || filters.genre || filters.searchTerm) && (
                         <div className="mt-4">
@@ -658,7 +609,7 @@ export default function TVShows() {
                                     <span className="px-3 py-1 bg-gray-700 text-sm rounded-full">
                     Year: {filters.year}
                                         <button
-                                            onClick={() => setFilters({...filters, year: ""})}
+                                            onClick={() => setFilters({ ...filters, year: "" })}
                                             className="ml-2 text-gray-400 hover:text-white"
                                         >
                       ×
@@ -669,7 +620,7 @@ export default function TVShows() {
                                     <span className="px-3 py-1 bg-gray-700 text-sm rounded-full">
                     Min Rating: {filters.rating}+
                     <button
-                        onClick={() => setFilters({...filters, rating: ""})}
+                        onClick={() => setFilters({ ...filters, rating: "" })}
                         className="ml-2 text-gray-400 hover:text-white"
                     >
                       ×
@@ -680,7 +631,7 @@ export default function TVShows() {
                                     <span className="px-3 py-1 bg-gray-700 text-sm rounded-full">
                     Genre: {genres.find(g => g.id.toString() === filters.genre)?.name || filters.genre}
                                         <button
-                                            onClick={() => setFilters({...filters, genre: ""})}
+                                            onClick={() => setFilters({ ...filters, genre: "" })}
                                             className="ml-2 text-gray-400 hover:text-white"
                                         >
                       ×
@@ -691,7 +642,7 @@ export default function TVShows() {
                                     <span className="px-3 py-1 bg-gray-700 text-sm rounded-full">
                     Search: "{filters.searchTerm}"
                     <button
-                        onClick={() => setFilters({...filters, searchTerm: ""})}
+                        onClick={() => setFilters({ ...filters, searchTerm: "" })}
                         className="ml-2 text-gray-400 hover:text-white"
                     >
                       ×
@@ -702,7 +653,6 @@ export default function TVShows() {
                         </div>
                     )}
                 </div>
-
                 {/* Results */}
                 {error ? (
                     <div className="text-center py-8 bg-gray-800 rounded-xl">
@@ -714,7 +664,6 @@ export default function TVShows() {
                             <span className="bg-gradient-to-r from-purple-500 to-blue-500 w-2 h-6 rounded-full mr-2"></span>
                             {filters.searchTerm ? `Search Results for "${filters.searchTerm}"` : "TV Shows"}
                         </h2>
-
                         {tvShows.length === 0 && !loading ? (
                             <div className="text-center py-10 bg-gray-800 rounded-xl">
                                 <FaTv className="text-5xl text-gray-700 mx-auto mb-4" />
@@ -758,7 +707,6 @@ export default function TVShows() {
                                         </div>
                                     </div>
                                 ))}
-
                                 {(loading || loadingMore) && (
                                     <div className="col-span-full flex justify-center py-8">
                                         <div className="w-10 h-10 border-4 border-gray-400 border-t-purple-500 rounded-full animate-spin"></div>
@@ -768,7 +716,6 @@ export default function TVShows() {
                         )}
                     </>
                 )}
-
                 {/* TV Show Details */}
                 {selectedItem && <ShowDetails />}
             </main>
