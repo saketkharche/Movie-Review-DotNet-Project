@@ -33,6 +33,71 @@ Welcome to the **Movie Review Web Application** – a simple yet powerful projec
   <img src="https://raw.githubusercontent.com/saketkharche/Movie-Review-DotNet-Project/refs/heads/master/1.png" alt="Demo" width="600"/>
 
 </p>
+<p align="center">
+
+  <img src="https://raw.githubusercontent.com/saketkharche/Movie-Review-DotNet-Project/refs/heads/master/2.png" alt="Demo" width="600"/>
+
+</p>
+<p align="center">
+
+  <img src="https://raw.githubusercontent.com/saketkharche/Movie-Review-DotNet-Project/refs/heads/master/3.png" alt="Demo" width="600"/>
+
+</p>
+<p align="center">
+
+  <img src="https://raw.githubusercontent.com/saketkharche/Movie-Review-DotNet-Project/refs/heads/master/4.png" alt="Demo" width="600"/>
+
+</p>
+<p align="center">
+
+  <img src="https://raw.githubusercontent.com/saketkharche/Movie-Review-DotNet-Project/refs/heads/master/5.png" alt="Demo" width="600"/>
+
+</p>
+<p align="center">
+
+  <img src="https://raw.githubusercontent.com/saketkharche/Movie-Review-DotNet-Project/refs/heads/master/6.png" alt="Demo" width="600"/>
+
+</p>
+<p align="center">
+
+  <img src="https://raw.githubusercontent.com/saketkharche/Movie-Review-DotNet-Project/refs/heads/master/7.png" alt="Demo" width="600"/>
+
+</p>
+<p align="center">
+
+  <img src="https://github.com/saketkharche/Movie-Review-DotNet-Project/blob/master/8.jpg?raw=true" alt="Demo" width="600"/>
+
+</p>
+<p align="center">
+
+  <img src="https://github.com/saketkharche/Movie-Review-DotNet-Project/blob/master/9.png?raw=true" alt="Demo" width="600"/>
+
+</p>
+<p align="center">
+
+  <img src="https://raw.githubusercontent.com/saketkharche/Movie-Review-DotNet-Project/refs/heads/master/10.png" alt="Demo" width="600"/>
+
+</p>
+<p align="center">
+
+  <img src="https://raw.githubusercontent.com/saketkharche/Movie-Review-DotNet-Project/refs/heads/master/11.png" alt="Demo" width="600"/>
+
+</p>
+<p align="center">
+
+  <img src="https://raw.githubusercontent.com/saketkharche/Movie-Review-DotNet-Project/refs/heads/master/12.png" alt="Demo" width="600"/>
+
+</p>
+<p align="center">
+
+  <img src="https://raw.githubusercontent.com/saketkharche/Movie-Review-DotNet-Project/refs/heads/master/13.png" alt="Demo" width="600"/>
+
+</p>
+<p align="center">
+
+  <img src="https://raw.githubusercontent.com/saketkharche/Movie-Review-DotNet-Project/refs/heads/master/14.png" alt="Demo" width="600"/>
+
+</p>
 
 ## 🏗️ Getting Started
 
