@@ -1,0 +1,98 @@
+flowchart TD
+    %% Frontend Layer
+    subgraph "Frontend" 
+        direction TB
+        user["User Browser"]:::user
+        subgraph "Next.js Frontend" 
+            direction TB
+            pages["Pages & Components"]:::frontend
+            apiService["API Service Layer"]:::frontend
+            types["Types (DTOs/Interfaces)"]:::frontend
+            utils["Utilities"]:::frontend
+            styles["Globals & Layout"]:::frontend
+        end
+    end
+
+    %% Backend Layer
+    subgraph "Backend API" 
+        direction TB
+        subgraph "Controllers" 
+            direction TB
+            CommentsController["CommentsController"]:::backend
+            FeedbackApiController["FeedbackApiController"]:::backend
+            MoviesController["MoviesController"]:::backend
+            ReportsController["ReportsController"]:::backend
+            ReviewsController["ReviewsController"]:::backend
+            UsersController["UsersController"]:::backend
+            VotesController["VotesController"]:::backend
+        end
+        subgraph "Services" 
+            direction TB
+            CommentService["CommentService"]:::backend
+            MovieService["MovieService"]:::backend
+            ReportService["ReportService"]:::backend
+            ReviewService["ReviewService"]:::backend
+            TokenService["TokenService"]:::backend
+            UserService["UserService"]:::backend
+            VoteService["VoteService"]:::backend
+        end
+        subgraph "Data Access" 
+            direction TB
+            dbContext["AppDbContext"]:::db
+            dto["DTOs"]:::backend
+        end
+    end
+
+    %% Database and External
+    sql["SQL Server Database"]:::db
+    ext["External Movie API"]:::external
+
+    %% Connections
+    user -->|"Interacts"| pages
+    pages -->|"calls"| apiService
+    apiService -->|"HTTP GET/POST"| MoviesController
+    apiService -->|"HTTP GET/POST"| ReviewsController
+    apiService -->|"HTTP GET/POST"| UsersController
+    apiService -->|"HTTP GET/POST"| CommentsController
+    apiService -->|"HTTP GET/POST"| VotesController
+    apiService -->|"HTTP GET/POST"| ReportsController
+    apiService -->|"HTTP GET/POST"| FeedbackApiController
+
+    Controllers -->|"injects"| Services
+    Services -->|"uses"| dbContext
+    Controllers -->|"maps to/from"| dto
+    dbContext -->|"queries/updates"| sql
+
+    apiService -->|"optional fetch"| ext
+    Services -->|"optional fetch"| ext
+
+    %% Click Events
+    click pages "https://github.com/saketkharche/movie-review-dotnet-project/tree/master/moviemo-frontend/app"
+    click apiService "https://github.com/saketkharche/movie-review-dotnet-project/blob/master/moviemo-frontend/app/services/api.ts"
+    click types "https://github.com/saketkharche/movie-review-dotnet-project/tree/master/moviemo-frontend/app/types"
+    click utils "https://github.com/saketkharche/movie-review-dotnet-project/blob/master/moviemo-frontend/app/utils/user.tsx"
+    click styles "https://github.com/saketkharche/movie-review-dotnet-project/blob/master/moviemo-frontend/app/globals.css"
+    click styles "https://github.com/saketkharche/movie-review-dotnet-project/blob/master/moviemo-frontend/app/layout.tsx"
+    click CommentsController "https://github.com/saketkharche/movie-review-dotnet-project/blob/master/Moviemo/Controllers/CommentsController.cs"
+    click FeedbackApiController "https://github.com/saketkharche/movie-review-dotnet-project/blob/master/Moviemo/Controllers/FeedbackApiController.cs"
+    click MoviesController "https://github.com/saketkharche/movie-review-dotnet-project/blob/master/Moviemo/Controllers/MoviesController.cs"
+    click ReportsController "https://github.com/saketkharche/movie-review-dotnet-project/blob/master/Moviemo/Controllers/ReportsController.cs"
+    click ReviewsController "https://github.com/saketkharche/movie-review-dotnet-project/blob/master/Moviemo/Controllers/ReviewsController.cs"
+    click UsersController "https://github.com/saketkharche/movie-review-dotnet-project/blob/master/Moviemo/Controllers/UsersController.cs"
+    click VotesController "https://github.com/saketkharche/movie-review-dotnet-project/blob/master/Moviemo/Controllers/VotesController.cs"
+    click CommentService "https://github.com/saketkharche/movie-review-dotnet-project/blob/master/Moviemo/Services/CommentService.cs"
+    click MovieService "https://github.com/saketkharche/movie-review-dotnet-project/blob/master/Moviemo/Services/MovieService.cs"
+    click ReportService "https://github.com/saketkharche/movie-review-dotnet-project/blob/master/Moviemo/Services/ReportService.cs"
+    click ReviewService "https://github.com/saketkharche/movie-review-dotnet-project/blob/master/Moviemo/Services/ReviewService.cs"
+    click TokenService "https://github.com/saketkharche/movie-review-dotnet-project/blob/master/Moviemo/Services/TokenService.cs"
+    click UserService "https://github.com/saketkharche/movie-review-dotnet-project/blob/master/Moviemo/Services/UserService.cs"
+    click VoteService "https://github.com/saketkharche/movie-review-dotnet-project/blob/master/Moviemo/Services/VoteService.cs"
+    click dbContext "https://github.com/saketkharche/movie-review-dotnet-project/blob/master/Moviemo/Data/AppDbContext.cs"
+    click dto "https://github.com/saketkharche/movie-review-dotnet-project/tree/master/Moviemo/Dtos"
+    
+    %% Styles
+    classDef user fill:#E3F2FD,stroke:#90CAF9,color:#0D47A1;
+    classDef frontend fill:#BBDEFB,stroke:#42A5F5,color:#0D47A1;
+    classDef backend fill:#C8E6C9,stroke:#66BB6A,color:#1B5E20;
+    classDef db fill:#CFD8DC,stroke:#78909C,color:#263238;
+    classDef external fill:#FFE0B2,stroke:#FFA726,color:#E65100
