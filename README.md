@@ -30,9 +30,10 @@ Welcome to the **Movie Review Web Application** – a simple yet powerful projec
 
 <p align="center">
 
-  <img src="https://raw.githubusercontent.com/saketkharche/Movie-Review-DotNet-Project/refs/heads/master/Swagger.png" alt="Demo" width="600"/>
+  <img src="https://raw.githubusercontent.com/saketkharche/Movie-Review-DotNet-Project/refs/heads/master/1.png" alt="Demo" width="600"/>
 
 </p>
+
 ## 🏗️ Getting Started
 
 Follow the steps below to get this project up and running on your local machine.
