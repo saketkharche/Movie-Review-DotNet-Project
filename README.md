@@ -1,170 +1,467 @@
+# ePathshala System Flow Chart
 
-# 🎬 Movie Review Web Application (ASP.NET Core MVC)
+## Complete System Architecture Flow
 
-Welcome to the **Movie Review Web Application** – a simple yet powerful project built using **ASP.NET Core MVC**, designed to manage and display movie reviews with CRUD operations. Whether you're a student learning ASP.NET or a developer looking to build a similar app, this project offers a great starting point!
+```mermaid
+graph TB
+    %% User Interface Layer
+    subgraph "Frontend (React + Material-UI)"
+        UI[User Interface]
+        Login[Login Page]
+        Dashboard[Dashboard Pages]
+        Chat[Chat Interface]
+        Exam[Exam Interface]
+        Assign[Assignment Interface]
+        Calendar[Calendar Interface]
+    end
 
-## 🚀 Features
+    %% API Gateway Layer
+    subgraph "API Gateway"
+        Router[React Router]
+        AuthGuard[Protected Routes]
+        API[API Service Layer]
+    end
 
-- 📝 **Add, Edit, Delete, and View** movie reviews
-- 🎭 Store movie title, description, genre, rating, and release date
-- 🗃️ Uses **Entity Framework Core** for data access
-- 🎨 Clean and responsive UI using **Razor Views** and **Bootstrap**
-- 🔍 Filtering and search functionality (basic)
-- 💾 SQL Server database integration
+    %% Backend Services Layer
+    subgraph "Backend Services (Spring Boot)"
+        AuthController[Auth Controller]
+        TeacherController[Teacher Controller]
+        StudentController[Student Controller]
+        ParentController[Parent Controller]
+        AdminController[Admin Controller]
+        ChatController[Chat Controller]
+        ExamController[Exam Controller]
+        FileController[File Controller]
+    end
 
-## 🧰 Tech Stack
+    %% Business Logic Layer
+    subgraph "Business Logic Layer"
+        AuthService[Auth Service]
+        TeacherService[Teacher Service]
+        StudentService[Student Service]
+        ParentService[Parent Service]
+        AdminService[Admin Service]
+        ChatService[Chat Service]
+        ExamService[Exam Service]
+        NotificationService[Notification Service]
+    end
 
-- **Framework**: ASP.NET Core MVC
-- **Language**: C#
-- **ORM**: Entity Framework Core
-- **Database**: SQL Server
-- **Frontend**: HTML5, CSS3, Bootstrap
-- **IDE**: Visual Studio
+    %% Data Access Layer
+    subgraph "Data Access Layer"
+        UserRepo[User Repository]
+        StudentRepo[Student Repository]
+        TeacherRepo[Teacher Repository]
+        AttendanceRepo[Attendance Repository]
+        GradeRepo[Grade Repository]
+        AssignmentRepo[Assignment Repository]
+        ExamRepo[Exam Repository]
+        ChatRepo[Chat Repository]
+    end
 
-## 📸 Screenshots
+    %% Database Layer
+    subgraph "Database (MySQL)"
+        Users[(Users Table)]
+        Students[(Students Table)]
+        Teachers[(Teachers Table)]
+        Parents[(Parents Table)]
+        Attendance[(Attendance Table)]
+        Grades[(Grades Table)]
+        Assignments[(Assignments Table)]
+        Submissions[(Submissions Table)]
+        Exams[(Exams Table)]
+        Questions[(Questions Table)]
+        ChatMessages[(Chat Messages Table)]
+        Notifications[(Notifications Table)]
+    end
 
-> _Screenshots can be added here for better visual context._
-<p align="center">
-  <img src="https://raw.githubusercontent.com/saketkharche/Movie-Review-DotNet-Project/refs/heads/master/Swagger.png" alt="Demo" width="600"/>
-</p>
+    %% External Services
+    subgraph "External Services"
+        JWT[JWT Authentication]
+        WebSocket[WebSocket Server]
+        FileStorage[File Storage]
+        EmailService[Email Service]
+    end
 
-<p align="center">
+    %% User Flow Connections
+    UI --> Router
+    Router --> AuthGuard
+    AuthGuard --> API
+    API --> AuthController
+    API --> TeacherController
+    API --> StudentController
+    API --> ParentController
+    API --> AdminController
+    API --> ChatController
+    API --> ExamController
 
-  <img src="https://raw.githubusercontent.com/saketkharche/Movie-Review-DotNet-Project/refs/heads/master/1.png" alt="Demo" width="600"/>
+    %% Controller to Service Connections
+    AuthController --> AuthService
+    TeacherController --> TeacherService
+    StudentController --> StudentService
+    ParentController --> ParentService
+    AdminController --> AdminService
+    ChatController --> ChatService
+    ExamController --> ExamService
 
-</p>
-<p align="center">
+    %% Service to Repository Connections
+    AuthService --> UserRepo
+    TeacherService --> TeacherRepo
+    TeacherService --> AttendanceRepo
+    TeacherService --> GradeRepo
+    TeacherService --> AssignmentRepo
+    StudentService --> StudentRepo
+    StudentService --> AssignmentRepo
+    StudentService --> GradeRepo
+    ParentService --> ParentRepo
+    AdminService --> UserRepo
+    ChatService --> ChatRepo
+    ExamService --> ExamRepo
 
-  <img src="https://raw.githubusercontent.com/saketkharche/Movie-Review-DotNet-Project/refs/heads/master/2.png" alt="Demo" width="600"/>
+    %% Repository to Database Connections
+    UserRepo --> Users
+    StudentRepo --> Students
+    TeacherRepo --> Teachers
+    ParentRepo --> Parents
+    AttendanceRepo --> Attendance
+    GradeRepo --> Grades
+    AssignmentRepo --> Assignments
+    AssignmentRepo --> Submissions
+    ExamRepo --> Exams
+    ExamRepo --> Questions
+    ChatRepo --> ChatMessages
 
-</p>
-<p align="center">
+    %% External Service Connections
+    AuthService --> JWT
+    ChatService --> WebSocket
+    FileController --> FileStorage
+    NotificationService --> EmailService
 
-  <img src="https://raw.githubusercontent.com/saketkharche/Movie-Review-DotNet-Project/refs/heads/master/3.png" alt="Demo" width="600"/>
+    %% Styling
+    classDef frontend fill:#e1f5fe
+    classDef backend fill:#f3e5f5
+    classDef database fill:#e8f5e8
+    classDef external fill:#fff3e0
 
-</p>
-<p align="center">
-
-  <img src="https://raw.githubusercontent.com/saketkharche/Movie-Review-DotNet-Project/refs/heads/master/4.png" alt="Demo" width="600"/>
-
-</p>
-<p align="center">
-
-  <img src="https://raw.githubusercontent.com/saketkharche/Movie-Review-DotNet-Project/refs/heads/master/5.png" alt="Demo" width="600"/>
-
-</p>
-<p align="center">
-
-  <img src="https://raw.githubusercontent.com/saketkharche/Movie-Review-DotNet-Project/refs/heads/master/6.png" alt="Demo" width="600"/>
-
-</p>
-<p align="center">
-
-  <img src="https://raw.githubusercontent.com/saketkharche/Movie-Review-DotNet-Project/refs/heads/master/7.png" alt="Demo" width="600"/>
-
-</p>
-<p align="center">
-
-  <img src="https://github.com/saketkharche/Movie-Review-DotNet-Project/blob/master/8.jpg?raw=true" alt="Demo" width="600"/>
-
-</p>
-<p align="center">
-
-  <img src="https://github.com/saketkharche/Movie-Review-DotNet-Project/blob/master/9.png?raw=true" alt="Demo" width="600"/>
-
-</p>
-<p align="center">
-
-  <img src="https://raw.githubusercontent.com/saketkharche/Movie-Review-DotNet-Project/refs/heads/master/10.png" alt="Demo" width="600"/>
-
-</p>
-<p align="center">
-
-  <img src="https://raw.githubusercontent.com/saketkharche/Movie-Review-DotNet-Project/refs/heads/master/11.png" alt="Demo" width="600"/>
-
-</p>
-<p align="center">
-
-  <img src="https://raw.githubusercontent.com/saketkharche/Movie-Review-DotNet-Project/refs/heads/master/12.png" alt="Demo" width="600"/>
-
-</p>
-<p align="center">
-
-  <img src="https://raw.githubusercontent.com/saketkharche/Movie-Review-DotNet-Project/refs/heads/master/13.png" alt="Demo" width="600"/>
-
-</p>
-<p align="center">
-
-  <img src="https://raw.githubusercontent.com/saketkharche/Movie-Review-DotNet-Project/refs/heads/master/14.png" alt="Demo" width="600"/>
-
-</p>
-
-## 🏗️ Getting Started
-
-Follow the steps below to get this project up and running on your local machine.
-
-### Prerequisites
-
-- [.NET 6 SDK or later](https://dotnet.microsoft.com/en-us/download)
-- [Visual Studio 2022 or later](https://visualstudio.microsoft.com/)
-- SQL Server or LocalDB
-
-### Installation
-
-1. **Clone the repository:**
-   ```bash
-   git clone https://github.com/saketkharche/movie-review-dotnet-project.git
-   cd movie-review-dotnet-project
-   ```
-
-2. **Update the database connection string**  
-   Open `appsettings.json` and configure your SQL Server connection string.
-
-3. **Apply Migrations and Create Database:**
-   ```bash
-   dotnet ef database update
-   ```
-
-4. **Run the application:**
-   ```bash
-   dotnet run
-   ```
-
-5. Open your browser and navigate to `https://localhost:5001` or the specified port.
-
-## 📁 Project Structure
-
-```
-MovieReview/
-├── Controllers/        # MVC Controllers
-├── Models/             # Entity Models
-├── Views/              # Razor Views
-├── Data/               # Database Context
-├── wwwroot/            # Static files
-├── appsettings.json    # Configuration settings
-└── Program.cs          # Entry point
-```
-
-## ✅ Future Improvements
-
-- User authentication and authorization
-- User-submitted reviews and comments
-- Rating system and review analytics
-- Responsive design enhancements
-
-## 🙌 Acknowledgements
-
-This project was created as part of a learning journey into ASP.NET Core MVC and Entity Framework Core.
-
-## 📄 License
-
-This project is licensed under the [MIT License](LICENSE).
-
----
-
-Made with ❤️ by [@saketkharche](https://github.com/saketkharche)
+    class UI,Login,Dashboard,Chat,Exam,Assign,Calendar,Router,AuthGuard,API frontend
+    class AuthController,TeacherController,StudentController,ParentController,AdminController,ChatController,ExamController,FileController,AuthService,TeacherService,StudentService,ParentService,AdminService,ChatService,ExamService,NotificationService,UserRepo,StudentRepo,TeacherRepo,AttendanceRepo,GradeRepo,AssignmentRepo,ExamRepo,ChatRepo backend
+    class Users,Students,Teachers,Parents,Attendance,Grades,Assignments,Submissions,Exams,Questions,ChatMessages,Notifications database
+    class JWT,WebSocket,FileStorage,EmailService external
 ```
 
----
+## User Authentication Flow
 
-Let me know if you'd like to add screenshots, badges, deployment instructions (e.g. Azure), or database diagrams!
+```mermaid
+sequenceDiagram
+    participant U as User
+    participant F as Frontend
+    participant A as AuthController
+    participant S as AuthService
+    participant R as UserRepository
+    participant D as Database
+    participant J as JWT
+
+    U->>F: Enter credentials
+    F->>A: POST /api/auth/login
+    A->>S: authenticateUser(credentials)
+    S->>R: findByEmail(email)
+    R->>D: SELECT * FROM users WHERE email = ?
+    D-->>R: User data
+    R-->>S: User object
+    S->>S: validatePassword(password)
+    S->>J: generateToken(user)
+    J-->>S: JWT token
+    S-->>A: LoginResponse(token, user)
+    A-->>F: 200 OK + token
+    F->>F: Store token in localStorage
+    F-->>U: Redirect to dashboard
+```
+
+## Teacher Dashboard Flow
+
+```mermaid
+flowchart TD
+    A[Teacher Login] --> B[Teacher Dashboard]
+    B --> C{Select Action}
+    
+    C -->|Mark Attendance| D[Attendance Page]
+    C -->|Manage Grades| E[Grades Page]
+    C -->|Create Assignment| F[Assignment Page]
+    C -->|Handle Leave Requests| G[Leave Requests Page]
+    C -->|Manage Exams| H[Exam Page]
+    C -->|Online Classes| I[Online Classes Page]
+    
+    D --> J[Mark Student Attendance]
+    E --> K[Enter Student Grades]
+    F --> L[Create New Assignment]
+    G --> M[Approve/Reject Leave]
+    H --> N[Create/Manage Exams]
+    I --> O[Schedule Online Class]
+    
+    J --> P[Save to Database]
+    K --> P
+    L --> P
+    M --> P
+    N --> P
+    O --> P
+    
+    P --> Q[Update Dashboard]
+    Q --> B
+```
+
+## Student Dashboard Flow
+
+```mermaid
+flowchart TD
+    A[Student Login] --> B[Student Dashboard]
+    B --> C{Select Action}
+    
+    C -->|View Assignments| D[Assignments Page]
+    C -->|Take Exams| E[Exams Page]
+    C -->|Check Grades| F[Grades Page]
+    C -->|View Attendance| G[Attendance Page]
+    C -->|Submit Leave Request| H[Leave Request Page]
+    C -->|View Calendar| I[Calendar Page]
+    
+    D --> J[View Assignment List]
+    E --> K[Start Exam]
+    F --> L[View Grade Report]
+    G --> M[View Attendance Record]
+    H --> N[Submit Leave Form]
+    I --> O[View Academic Calendar]
+    
+    J --> P[Submit Assignment]
+    K --> Q[Answer Questions]
+    L --> R[Download Report]
+    M --> S[Track Progress]
+    N --> T[Wait for Approval]
+    O --> U[View Events]
+    
+    P --> V[Upload File]
+    Q --> W[Submit Exam]
+    V --> X[Save to Database]
+    W --> X
+    X --> Y[Update Dashboard]
+    Y --> B
+```
+
+## Real-time Chat Flow
+
+```mermaid
+sequenceDiagram
+    participant U1 as User 1
+    participant F1 as Frontend 1
+    participant WS as WebSocket Server
+    participant F2 as Frontend 2
+    participant U2 as User 2
+    participant DB as Database
+
+    U1->>F1: Type message
+    F1->>WS: Send message via WebSocket
+    WS->>DB: Save message to database
+    WS->>F2: Broadcast message to User 2
+    F2->>U2: Display message
+    U2->>F2: Type reply
+    F2->>WS: Send reply via WebSocket
+    WS->>DB: Save reply to database
+    WS->>F1: Broadcast reply to User 1
+    F1->>U1: Display reply
+```
+
+## Exam Management Flow
+
+```mermaid
+flowchart TD
+    A[Teacher Creates Exam] --> B[Set Exam Details]
+    B --> C[Add Questions]
+    C --> D[Set Time Limit]
+    D --> E[Publish Exam]
+    E --> F[Students See Available Exams]
+    F --> G[Student Starts Exam]
+    G --> H[Timer Starts]
+    H --> I[Student Answers Questions]
+    I --> J{Time Up?}
+    J -->|No| I
+    J -->|Yes| K[Auto Submit]
+    I --> L[Manual Submit]
+    K --> M[Grade Exam]
+    L --> M
+    M --> N[Calculate Score]
+    N --> O[Save Results]
+    O --> P[Notify Student]
+    P --> Q[Update Grade Report]
+```
+
+## File Upload Flow
+
+```mermaid
+sequenceDiagram
+    participant U as User
+    participant F as Frontend
+    participant C as FileController
+    participant S as FileService
+    participant FS as FileStorage
+    participant DB as Database
+
+    U->>F: Select file to upload
+    F->>C: POST /api/files/upload
+    C->>S: processFileUpload(file)
+    S->>FS: Save file to storage
+    FS-->>S: File URL
+    S->>DB: Save file metadata
+    DB-->>S: File record
+    S-->>C: File upload response
+    C-->>F: 200 OK + file URL
+    F-->>U: Show upload success
+```
+
+## Notification System Flow
+
+```mermaid
+flowchart TD
+    A[System Event] --> B[Notification Service]
+    B --> C{Event Type}
+    
+    C -->|Assignment Created| D[Notify Students]
+    C -->|Grade Posted| E[Notify Student & Parent]
+    C -->|Leave Request| F[Notify Teacher/Parent]
+    C -->|Exam Scheduled| G[Notify Students]
+    C -->|Chat Message| H[Notify Recipient]
+    
+    D --> I[Send Email]
+    E --> I
+    F --> I
+    G --> I
+    H --> J[Real-time Notification]
+    
+    I --> K[Update Notification Table]
+    J --> K
+    K --> L[Display in UI]
+```
+
+## Database Schema Relationships
+
+```mermaid
+erDiagram
+    USERS ||--o{ STUDENTS : has
+    USERS ||--o{ TEACHERS : has
+    USERS ||--o{ PARENTS : has
+    
+    STUDENTS ||--o{ ATTENDANCE : tracks
+    STUDENTS ||--o{ GRADES : receives
+    STUDENTS ||--o{ ASSIGNMENT_SUBMISSIONS : submits
+    STUDENTS ||--o{ LEAVE_REQUESTS : requests
+    STUDENTS ||--o{ EXAM_ATTEMPTS : takes
+    
+    TEACHERS ||--o{ ATTENDANCE : marks
+    TEACHERS ||--o{ GRADES : assigns
+    TEACHERS ||--o{ ASSIGNMENTS : creates
+    TEACHERS ||--o{ LEAVE_REQUESTS : approves
+    TEACHERS ||--o{ EXAMS : creates
+    
+    ASSIGNMENTS ||--o{ ASSIGNMENT_SUBMISSIONS : receives
+    EXAMS ||--o{ EXAM_QUESTIONS : contains
+    EXAMS ||--o{ EXAM_ATTEMPTS : has
+    
+    CHAT_ROOMS ||--o{ CHAT_MESSAGES : contains
+    USERS ||--o{ CHAT_MESSAGES : sends
+    
+    PARENTS ||--o{ STUDENTS : monitors
+    PARENTS ||--o{ LEAVE_REQUESTS : approves
+```
+
+## Security Flow
+
+```mermaid
+flowchart TD
+    A[Request] --> B{JWT Token Present?}
+    B -->|No| C[Redirect to Login]
+    B -->|Yes| D[Validate JWT Token]
+    D --> E{Token Valid?}
+    E -->|No| C
+    E -->|Yes| F[Check User Role]
+    F --> G{Has Permission?}
+    G -->|No| H[Return 403 Forbidden]
+    G -->|Yes| I[Process Request]
+    I --> J[Return Response]
+    
+    C --> K[User Login]
+    K --> L[Generate New JWT]
+    L --> M[Store Token]
+    M --> N[Redirect to Original Request]
+```
+
+## System Deployment Architecture
+
+```mermaid
+graph TB
+    subgraph "Client Layer"
+        Browser[Web Browser]
+        Mobile[Mobile Browser]
+    end
+    
+    subgraph "Load Balancer"
+        LB[NGINX Load Balancer]
+    end
+    
+    subgraph "Frontend Layer"
+        React1[React App Instance 1]
+        React2[React App Instance 2]
+    end
+    
+    subgraph "Backend Layer"
+        Spring1[Spring Boot Instance 1]
+        Spring2[Spring Boot Instance 2]
+    end
+    
+    subgraph "Database Layer"
+        MySQL[(MySQL Database)]
+        Redis[(Redis Cache)]
+    end
+    
+    subgraph "External Services"
+        Email[Email Service]
+        Storage[File Storage]
+        CDN[CDN]
+    end
+    
+    Browser --> LB
+    Mobile --> LB
+    LB --> React1
+    LB --> React2
+    React1 --> Spring1
+    React1 --> Spring2
+    React2 --> Spring1
+    React2 --> Spring2
+    Spring1 --> MySQL
+    Spring2 --> MySQL
+    Spring1 --> Redis
+    Spring2 --> Redis
+    Spring1 --> Email
+    Spring2 --> Storage
+    React1 --> CDN
+    React2 --> CDN
+```
+
+## Error Handling Flow
+
+```mermaid
+flowchart TD
+    A[Request] --> B{Valid Request?}
+    B -->|No| C[Return 400 Bad Request]
+    B -->|Yes| D[Process Request]
+    D --> E{Database Error?}
+    E -->|Yes| F[Return 500 Internal Server Error]
+    E -->|No| G{Authentication Error?}
+    G -->|Yes| H[Return 401 Unauthorized]
+    G -->|No| I{Authorization Error?}
+    I -->|Yes| J[Return 403 Forbidden]
+    I -->|No| K[Return Success Response]
+    
+    C --> L[Log Error]
+    F --> L
+    H --> L
+    J --> L
+    K --> M[Log Success]
+```
+
+This comprehensive flow chart demonstrates the complete architecture and data flow of the ePathshala system, covering authentication, user interactions, real-time features, and system deployment.
